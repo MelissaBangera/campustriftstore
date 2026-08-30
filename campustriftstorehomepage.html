@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Thrift — Buy. Sell. Reuse. Together.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --forest:#183C35;
+    --forest-dark:#0F2823;
+    --sage:#A8C3B0;
+    --sage-light:#E9EFE6;
+    --cream:#F7F4ED;
+    --card:#FDFBF6;
+    --ink:#202624;
+    --muted:#6F7773;
+    --terracotta:#C86B4A;
+    --terracotta-tint:#F3E1D6;
+    --line:rgba(24,60,53,0.12);
+    --shadow-sm:0 2px 10px rgba(24,60,53,0.06);
+    --shadow-md:0 14px 30px rgba(24,60,53,0.10);
+    --shadow-lg:0 22px 48px rgba(24,60,53,0.16);
+    --radius-card:16px;
+    --radius-btn:9px;
+    --radius-field:12px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --dur:0.25s;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;margin:0;padding:0;}
+  button{font-family:inherit;cursor:pointer;}
+  h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0;color:var(--forest);}
+  p{margin:0;}
+  :focus-visible{outline:2px solid var(--terracotta);outline-offset:3px;border-radius:4px;}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
+  }
+
+  .container{max-width:1240px;margin:0 auto;padding:0 32px;}
+  .icon{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+  .icon-fill{fill:currentColor;stroke:none;}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--terracotta);margin-bottom:14px;
+  }
+  .eyebrow::before{content:"";width:18px;height:1.5px;background:var(--terracotta);display:inline-block;}
+
+  .section{padding:96px 0;}
+  .section-head{max-width:640px;margin-bottom:52px;}
+  .section-head.center{margin-left:auto;margin-right:auto;text-align:center;}
+  .section-title{font-size:clamp(1.9rem,3.2vw,2.6rem);line-height:1.15;margin-bottom:14px;}
+  .section-sub{color:var(--muted);font-size:1.05rem;max-width:520px;}
+  .section-head.center .section-sub{margin-left:auto;margin-right:auto;}
+
+  /* ============ BUTTONS ============ */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 28px;border-radius:var(--radius-btn);
+    font-weight:600;font-size:0.95rem;border:1.5px solid transparent;
+    transition:transform var(--dur) ease, background var(--dur) ease, opacity var(--dur) ease, box-shadow var(--dur) ease;
+    white-space:nowrap;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--forest);color:var(--cream);}
+  .btn-primary:hover{background:var(--forest-dark);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+  .btn-secondary{background:transparent;color:var(--forest);border-color:var(--forest);}
+  .btn-secondary:hover{background:var(--forest);color:var(--cream);transform:translateY(-2px);}
+  .btn-cream{background:var(--cream);color:var(--forest);}
+  .btn-cream:hover{background:#fff;box-shadow:var(--shadow-md);transform:translateY(-2px);}
+  .btn-ghost-cream{background:transparent;color:var(--cream);border-color:rgba(247,244,237,0.5);}
+  .btn-ghost-cream:hover{background:rgba(247,244,237,0.12);border-color:var(--cream);}
+  .btn-sm{padding:10px 18px;font-size:0.85rem;}
+  .btn-block{width:100%;}
+
+  /* ============ NAVBAR ============ */
+  header.nav{
+    position:sticky;top:0;z-index:100;
+    background:transparent;
+    transition:background var(--dur) ease, box-shadow var(--dur) ease, border-color var(--dur) ease;
+    border-bottom:1px solid transparent;
+  }
+  header.nav.is-scrolled{
+    background:rgba(247,244,237,0.92);
+    backdrop-filter:blur(10px);
+    box-shadow:var(--shadow-sm);
+    border-bottom-color:var(--line);
+  }
+  .nav-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 32px;max-width:1240px;margin:0 auto;
+  }
+  .logo{
+    font-family:var(--font-display);font-size:1.35rem;letter-spacing:0.01em;color:var(--forest);
+    display:flex;align-items:center;gap:9px;
+  }
+  .logo .icon{width:24px;height:24px;color:var(--terracotta);}
+  .nav-links{display:flex;align-items:center;gap:36px;}
+  .nav-links a{
+    font-size:0.94rem;font-weight:500;color:var(--ink);position:relative;padding:4px 0;
+    transition:color var(--dur);
+  }
+  .nav-links a::after{
+    content:"";position:absolute;left:0;bottom:-2px;width:0;height:1.5px;background:var(--terracotta);
+    transition:width var(--dur) ease;
+  }
+  .nav-links a:hover{color:var(--terracotta);}
+  .nav-links a:hover::after{width:100%;}
+  .nav-actions{display:flex;align-items:center;gap:6px;}
+  .icon-btn{
+    width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+    background:transparent;border:none;color:var(--forest);transition:background var(--dur);position:relative;
+  }
+  .icon-btn:hover{background:rgba(24,60,53,0.08);}
+  .icon-btn .icon{width:20px;height:20px;}
+  .icon-btn.wishlist.active{color:var(--terracotta);}
+  .icon-btn.wishlist.active .icon{fill:var(--terracotta);}
+  .nav-sell{margin-left:10px;}
+  .hamburger{display:none;}
+
+  /* mobile menu panel */
+  .mobile-panel{
+    display:none;position:fixed;inset:0;z-index:150;background:var(--cream);
+    padding:24px 32px;transform:translateY(-100%);transition:transform 0.35s ease;
+    overflow-y:auto;
+  }
+  .mobile-panel.open{transform:translateY(0);}
+  .mobile-panel-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;}
+  .mobile-panel a{display:block;font-family:var(--font-display);font-size:1.6rem;color:var(--forest);padding:14px 0;border-bottom:1px solid var(--line);}
+  .mobile-panel .btn{margin-top:28px;}
+
+  /* ============ HERO ============ */
+  .hero{padding:56px 0 80px;position:relative;overflow:hidden;}
+  .hero-grid{display:grid;grid-template-columns:1fr 0.9fr;gap:56px;align-items:center;}
+  .hero-eyebrow{
+    display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 10px;border-radius:99px;
+    background:var(--sage-light);color:var(--forest);font-size:0.82rem;font-weight:600;margin-bottom:22px;
+  }
+  .hero-eyebrow .icon{width:15px;height:15px;color:var(--terracotta);}
+  .hero h1{font-size:clamp(2.6rem,4.6vw,4.1rem);line-height:1.08;letter-spacing:-0.01em;margin-bottom:20px;}
+  .hero h1 em{font-style:italic;color:var(--terracotta);}
+  .hero-sub{font-size:1.15rem;color:var(--muted);max-width:460px;margin-bottom:34px;}
+
+  .search-bar{
+    display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--line);
+    border-radius:var(--radius-field);padding:6px 8px 6px 20px;margin-bottom:22px;max-width:500px;
+    box-shadow:var(--shadow-sm);transition:border-color var(--dur), box-shadow var(--dur);
+  }
+  .search-bar:focus-within{border-color:var(--forest);box-shadow:var(--shadow-md);}
+  .search-bar .icon{color:var(--muted);flex-shrink:0;}
+  .search-bar input{
+    border:none;outline:none;flex:1;font-family:inherit;font-size:0.98rem;background:transparent;color:var(--ink);padding:10px 0;
+  }
+  .search-bar input::placeholder{color:#9aa19c;}
+  .search-bar button{
+    background:var(--forest);color:var(--cream);border:none;border-radius:calc(var(--radius-field) - 3px);
+    padding:11px 20px;font-weight:600;font-size:0.9rem;display:flex;align-items:center;gap:6px;
+    transition:background var(--dur);
+  }
+  .search-bar button:hover{background:var(--forest-dark);}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+
+  /* hero collage */
+  .hero-collage{position:relative;height:460px;}
+  .collage-item{
+    position:absolute;width:170px;border-radius:14px;background:var(--card);
+    box-shadow:var(--shadow-lg);border:1px solid var(--line);overflow:hidden;
+    transition:transform var(--dur) ease;
+  }
+  .collage-item:hover{transform:scale(1.04) rotate(0deg) !important;z-index:5;}
+  .collage-photo{
+    aspect-ratio:1/0.85;display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .collage-photo .icon{width:52%;height:52%;color:var(--forest);opacity:0.85;stroke-width:1.3;}
+  .collage-cap{padding:10px 12px 12px;}
+  .collage-cap .cname{font-size:0.78rem;font-weight:700;color:var(--ink);}
+  .collage-cap .cprice{font-size:0.78rem;color:var(--terracotta);font-weight:700;margin-top:2px;}
+  .bg-a{background:linear-gradient(150deg,var(--sage-light),var(--card) 70%);}
+  .bg-b{background:linear-gradient(150deg,var(--terracotta-tint),var(--card) 70%);}
+  .bg-c{background:linear-gradient(150deg,var(--sage) 0%, var(--sage-light) 60%, var(--card) 100%);}
+  .bg-d{background:linear-gradient(150deg,#EFE6D8,var(--card) 70%);}
+
+  .c1{top:0;left:8%;transform:rotate(-6deg);z-index:2;}
+  .c2{top:6%;left:52%;transform:rotate(5deg);z-index:3;}
+  .c3{top:44%;left:0;transform:rotate(4deg);z-index:1;width:150px;}
+  .c4{top:38%;left:44%;transform:rotate(-4deg);z-index:4;}
+  .c5{top:73%;left:22%;transform:rotate(-8deg);z-index:5;width:150px;}
+
+  .tag-chip{
+    position:absolute;top:8px;left:8px;background:var(--cream);border:1px solid var(--forest);
+    color:var(--forest);font-size:0.62rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;
+    padding:3px 9px 3px 14px;border-radius:0 6px 6px 0;z-index:2;
+  }
+  .tag-chip::before{content:"";position:absolute;left:5px;top:50%;transform:translateY(-50%);width:3px;height:3px;border-radius:50%;background:var(--forest);}
+
+  /* ============ CATEGORY GRID ============ */
+  .category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px;}
+  .category-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:26px 22px;display:flex;flex-direction:column;gap:16px;
+    transition:transform var(--dur) ease, box-shadow var(--dur) ease, border-color var(--dur) ease;
+  }
+  .category-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);border-color:var(--sage);}
+  .category-icon-wrap{
+    width:52px;height:52px;border-radius:13px;background:var(--sage-light);
+    display:flex;align-items:center;justify-content:center;color:var(--forest);
+    transition:transform var(--dur) ease, background var(--dur) ease;
+  }
+  .category-card:hover .category-icon-wrap{transform:scale(1.08);background:var(--terracotta-tint);}
+  .category-icon-wrap .icon{width:26px;height:26px;stroke-width:1.6;}
+  .category-name{font-weight:700;font-size:1.02rem;color:var(--ink);}
+  .category-count{font-size:0.84rem;color:var(--muted);margin-top:2px;}
+
+  /* ============ PRODUCT GRID / CARDS ============ */
+  .product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:26px;}
+  .product-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius-card);
+    overflow:hidden;transition:transform var(--dur) ease, box-shadow var(--dur) ease;position:relative;
+  }
+  .product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);}
+  .product-photo{
+    aspect-ratio:1/0.92;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  .product-photo .icon{width:38%;height:38%;color:var(--forest);opacity:0.82;stroke-width:1.3;transition:transform 0.4s ease;}
+  .product-card:hover .product-photo .icon{transform:scale(1.08);}
+  .product-condition{
+    position:absolute;top:14px;left:14px;background:var(--cream);border:1px solid var(--forest);
+    color:var(--forest);font-size:0.66rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;
+    padding:4px 10px 4px 16px;border-radius:0 7px 7px 0;
+  }
+  .product-condition::before{content:"";position:absolute;left:6px;top:50%;transform:translateY(-50%);width:3px;height:3px;border-radius:50%;background:var(--forest);}
+  .wishlist-btn{
+    position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;
+    background:rgba(253,251,246,0.9);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+    color:var(--forest);opacity:0.85;transition:opacity var(--dur), transform var(--dur), background var(--dur);
+  }
+  .product-card:hover .wishlist-btn{opacity:1;}
+  .wishlist-btn:hover{background:#fff;transform:scale(1.08);}
+  .wishlist-btn .icon{width:17px;height:17px;}
+  .wishlist-btn.active{color:var(--terracotta);}
+  .wishlist-btn.active .icon{fill:var(--terracotta);}
+  .wishlist-btn.pop{animation:pop 0.35s ease;}
+  @keyframes pop{0%{transform:scale(1);}40%{transform:scale(1.3);}100%{transform:scale(1);}}
+
+  .view-item{
+    position:absolute;bottom:14px;left:50%;transform:translate(-50%,10px);
+    background:var(--forest);color:var(--cream);font-size:0.78rem;font-weight:600;
+    padding:9px 18px;border-radius:99px;opacity:0;transition:opacity var(--dur), transform var(--dur);
+    white-space:nowrap;box-shadow:var(--shadow-sm);
+  }
+  .product-card:hover .view-item{opacity:1;transform:translate(-50%,0);}
+
+  .product-info{padding:16px 18px 18px;}
+  .product-name{font-weight:700;font-size:0.98rem;color:var(--ink);margin-bottom:6px;}
+  .product-price{font-family:var(--font-display);font-size:1.2rem;color:var(--forest);margin-bottom:10px;}
+  .product-meta{display:flex;align-items:center;justify-content:space-between;font-size:0.8rem;color:var(--muted);}
+  .product-seller{font-weight:600;color:var(--ink);}
+  .product-loc{display:flex;align-items:center;gap:4px;}
+  .product-loc .icon{width:13px;height:13px;color:var(--terracotta);}
+
+  .section-head-row{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:52px;gap:24px;flex-wrap:wrap;}
+  .view-all{
+    display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--forest);font-size:0.95rem;
+    padding-bottom:2px;border-bottom:1.5px solid var(--forest);flex-shrink:0;
+  }
+  .view-all .icon{width:16px;height:16px;transition:transform var(--dur);}
+  .view-all:hover .icon{transform:translateX(4px);}
+
+  /* ============ MADE ON CAMPUS ============ */
+  .section-sage{background:var(--sage-light);}
+  .shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px;}
+  .shop-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:0;overflow:hidden;transition:transform var(--dur), box-shadow var(--dur);
+  }
+  .shop-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);}
+  .shop-banner{
+    height:110px;display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .shop-banner .icon{width:44px;height:44px;color:var(--forest);}
+  .shop-avatar{
+    width:58px;height:58px;border-radius:50%;background:var(--card);border:3px solid var(--card);
+    display:flex;align-items:center;justify-content:center;position:absolute;bottom:-29px;left:22px;
+    box-shadow:var(--shadow-sm);color:var(--forest);
+  }
+  .shop-avatar .icon{width:26px;height:26px;}
+  .shop-body{padding:40px 22px 24px;}
+  .shop-name{font-weight:700;font-size:1.05rem;margin-bottom:6px;}
+  .shop-desc{font-size:0.87rem;color:var(--muted);margin-bottom:14px;min-height:40px;}
+  .shop-stats{display:flex;align-items:center;gap:12px;font-size:0.8rem;color:var(--muted);margin-bottom:18px;}
+  .shop-stats .rating{display:flex;align-items:center;gap:4px;color:var(--terracotta);font-weight:700;}
+  .shop-stats .rating .icon{width:13px;height:13px;fill:var(--terracotta);stroke:none;}
+  .shop-stats .dot{width:3px;height:3px;background:var(--muted);border-radius:50%;}
+
+  /* ============ WHY SECTION ============ */
+  .why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;}
+  .why-card{padding:8px 4px;}
+  .why-icon{
+    width:56px;height:56px;border-radius:14px;background:var(--forest);color:var(--cream);
+    display:flex;align-items:center;justify-content:center;margin-bottom:22px;
+  }
+  .why-icon .icon{width:26px;height:26px;}
+  .why-card h3{font-size:1.28rem;margin-bottom:10px;}
+  .why-card p{color:var(--muted);font-size:0.96rem;}
+
+  /* ============ HOW IT WORKS ============ */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative;}
+  .step{position:relative;padding:0 28px;}
+  .step:first-child{padding-left:0;}
+  .step:last-child{padding-right:0;}
+  .step-num{
+    font-family:var(--font-display);font-size:0.95rem;color:var(--terracotta);margin-bottom:18px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .step-num .num{font-size:2.4rem;line-height:1;color:var(--forest);opacity:0.18;}
+  .step-icon{
+    width:48px;height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);
+    display:flex;align-items:center;justify-content:center;color:var(--forest);margin-bottom:18px;
+  }
+  .step h3{font-size:1.2rem;margin-bottom:8px;}
+  .step p{color:var(--muted);font-size:0.94rem;}
+  .step-connector{
+    position:absolute;top:24px;left:calc(100% - 14px);width:calc(100% - 20px);height:1px;
+    background:repeating-linear-gradient(90deg,var(--sage) 0 8px, transparent 8px 14px);
+    z-index:0;
+  }
+  .step:last-child .step-connector{display:none;}
+
+  /* ============ SELL CTA ============ */
+  .sell-cta{background:var(--forest);color:var(--cream);position:relative;overflow:hidden;}
+  .sell-cta::before,.sell-cta::after{
+    content:"";position:absolute;border:1.5px solid rgba(247,244,237,0.14);border-radius:16px;
+  }
+  .sell-cta::before{width:160px;height:200px;top:-40px;right:8%;transform:rotate(-14deg);}
+  .sell-cta::after{width:120px;height:150px;bottom:-50px;right:22%;transform:rotate(10deg);}
+  .sell-cta-inner{position:relative;z-index:1;max-width:640px;}
+  .sell-cta h2{color:var(--cream);font-size:clamp(2rem,3.6vw,2.9rem);margin-bottom:16px;line-height:1.15;}
+  .sell-cta p{color:rgba(247,244,237,0.78);font-size:1.08rem;margin-bottom:32px;max-width:480px;}
+  .sell-cta-foot{margin-top:18px;font-size:0.86rem;color:rgba(247,244,237,0.65);}
+
+  /* ============ TRUST SECTION ============ */
+  .trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
+  .trust-list{display:flex;flex-direction:column;gap:22px;}
+  .trust-item{display:flex;gap:16px;align-items:flex-start;}
+  .trust-icon{
+    width:38px;height:38px;border-radius:10px;background:var(--sage-light);color:var(--forest);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .trust-icon .icon{width:19px;height:19px;}
+  .trust-item h4{font-size:0.98rem;font-weight:700;margin-bottom:3px;color:var(--ink);}
+  .trust-item p{font-size:0.87rem;color:var(--muted);}
+  .trust-note{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:32px;
+  }
+  .trust-note .eyebrow{margin-bottom:12px;}
+  .trust-note p{color:var(--muted);font-size:0.95rem;margin-bottom:20px;}
+
+  /* ============ FOOTER ============ */
+  footer{background:var(--forest);color:rgba(247,244,237,0.85);padding:72px 0 0;}
+  .footer-top{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:48px;padding-bottom:52px;border-bottom:1px solid rgba(247,244,237,0.14);}
+  .footer-brand .logo{color:var(--cream);margin-bottom:14px;}
+  .footer-brand .logo .icon{color:var(--terracotta);}
+  .footer-brand p{color:rgba(247,244,237,0.6);font-size:0.92rem;max-width:260px;}
+  .footer-col h5{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(247,244,237,0.5);margin-bottom:18px;font-weight:700;}
+  .footer-col ul{display:flex;flex-direction:column;gap:12px;}
+  .footer-col a{font-size:0.92rem;color:rgba(247,244,237,0.82);transition:color var(--dur);}
+  .footer-col a:hover{color:var(--terracotta);}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding:24px 0;font-size:0.82rem;color:rgba(247,244,237,0.5);flex-wrap:wrap;gap:10px;}
+  .footer-tag{display:flex;align-items:center;gap:6px;}
+  .footer-tag .icon{width:14px;height:14px;color:var(--terracotta);}
+
+  /* ============ TOAST ============ */
+  #toast-container{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;}
+  .toast{
+    background:var(--forest);color:var(--cream);padding:12px 22px;border-radius:99px;font-size:0.88rem;font-weight:500;
+    box-shadow:var(--shadow-lg);opacity:0;transform:translateY(12px);transition:opacity 0.3s ease, transform 0.3s ease;
+    display:flex;align-items:center;gap:8px;white-space:nowrap;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+  .toast .icon{width:15px;height:15px;color:var(--terracotta);}
+
+  /* ============ REVEAL ============ */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity 0.5s ease, transform 0.5s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:1024px){
+    .container{padding:0 24px;}
+    .section{padding:76px 0;}
+    .hero-grid{grid-template-columns:1fr;gap:52px;}
+    .hero-collage{height:400px;max-width:520px;margin:0 auto;}
+    .why-grid{grid-template-columns:repeat(3,1fr);gap:22px;}
+    .trust-grid{grid-template-columns:1fr;gap:32px;}
+    .footer-top{grid-template-columns:1fr 1fr;}
+    .footer-brand{grid-column:1/-1;}
+  }
+
+  @media (max-width:860px){
+    .nav-links{display:none;}
+    .hamburger{display:flex;}
+    .icon-btn.desktop-only{display:none;}
+    .nav-sell.desktop-only{display:none;}
+    .mobile-panel{display:block;}
+    .hero{padding:36px 0 60px;}
+    .section-head-row{align-items:flex-start;}
+    .why-grid{grid-template-columns:1fr;gap:30px;}
+    .steps{grid-template-columns:1fr;gap:36px;}
+    .step{padding:0 !important;}
+    .step-connector{display:none;}
+    .shop-grid{grid-auto-flow:column;grid-auto-columns:78%;grid-template-columns:none;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;margin:0 -24px;padding-left:24px;padding-right:24px;}
+    .shop-card{scroll-snap-align:start;}
+    .trust-grid{grid-template-columns:1fr;}
+  }
+
+  @media (max-width:640px){
+    .container{padding:0 20px;}
+    .section{padding:60px 0;}
+    .section-title{font-size:1.7rem;}
+    .nav-inner{padding:16px 20px;}
+    .hero h1{font-size:2.3rem;}
+    .hero-sub{font-size:1.02rem;}
+    .search-bar{max-width:100%;flex-wrap:nowrap;}
+    .search-bar button span{display:none;}
+    .hero-ctas{flex-direction:column;align-items:stretch;}
+    .hero-collage{height:340px;}
+    .collage-item{width:130px;}
+    .c3,.c5{width:120px;}
+    .category-grid{grid-template-columns:repeat(2,1fr);gap:14px;}
+    .category-card{padding:20px 16px;}
+    .product-grid{grid-template-columns:repeat(2,1fr);gap:14px;}
+    .product-info{padding:12px 12px 14px;}
+    .product-name{font-size:0.86rem;}
+    .product-price{font-size:1.02rem;}
+    .product-meta{flex-direction:column;align-items:flex-start;gap:4px;}
+    .footer-top{grid-template-columns:1fr;gap:36px;}
+    .sell-cta-inner .btn{width:100%;}
+    .footer-bottom{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ ICON SPRITE ============ -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="20.5" y2="20.5"/></symbol>
+  <symbol id="icon-heart" viewBox="0 0 24 24"><path d="M12 20.3c-4.6-2.9-8.7-6.3-8.7-10.6a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.3-4.1 7.7-8.7 10.6z"/></symbol>
+  <symbol id="icon-message" viewBox="0 0 24 24"><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4.2 3.5V16.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/></symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.8 3.3-6 7.5-6s7.5 2.2 7.5 6"/></symbol>
+  <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="icon-arrow-right" viewBox="0 0 24 24"><line x1="4" y1="12" x2="18" y2="12"/><polyline points="12,6 18,12 12,18"/></symbol>
+  <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M11.4 3H4.6A1.6 1.6 0 0 0 3 4.6v6.8c0 .4.2.8.5 1.1l9 9c.6.6 1.6.6 2.2 0l6.8-6.8c.6-.6.6-1.6 0-2.2l-9-9c-.3-.3-.7-.5-1.1-.5z"/><circle cx="7.6" cy="7.6" r="1.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 21.5s6.8-7 6.8-12a6.8 6.8 0 1 0-13.6 0c0 5 6.8 12 6.8 12z"/><circle cx="12" cy="9.4" r="2.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.2 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.2 5.9-.8z"/></symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="4,12.5 9.5,18 20,6"/></symbol>
+  <symbol id="icon-exchange" viewBox="0 0 24 24"><path d="M3 8h14"/><polyline points="13,4 17,8 13,12"/><path d="M21 16H7"/><polyline points="11,20 7,16 11,12"/></symbol>
+
+  <!-- category icons -->
+  <symbol id="icon-clothes" viewBox="0 0 32 32"><path d="M16 5.2a2.1 2.1 0 1 0-2.1 2.1"/><path d="M13.9 7.3 4.5 15.5h23L13.9 7.3z"/><line x1="4.5" y1="15.5" x2="27.5" y2="15.5"/></symbol>
+  <symbol id="icon-electronics" viewBox="0 0 32 32"><path d="M6 18.5v-3a10 10 0 0 1 20 0v3"/><rect x="3.5" y="17.5" width="6.5" height="9" rx="3"/><rect x="22" y="17.5" width="6.5" height="9" rx="3"/></symbol>
+  <symbol id="icon-books" viewBox="0 0 32 32"><rect x="5.5" y="6" width="6" height="20" rx="1"/><rect x="13" y="8.5" width="6" height="17.5" rx="1"/><rect x="20.5" y="4.5" width="6" height="21.5" rx="1"/></symbol>
+  <symbol id="icon-furniture" viewBox="0 0 32 32"><path d="M7.5 14.5V9.8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v4.7"/><path d="M7.5 14.5v7.7a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7.7"/><line x1="7.5" y1="19.5" x2="24.5" y2="19.5"/><line x1="6" y1="24.2" x2="6" y2="27.5"/><line x1="26" y1="24.2" x2="26" y2="27.5"/></symbol>
+  <symbol id="icon-accessories" viewBox="0 0 32 32"><circle cx="10" cy="16.5" r="5"/><circle cx="22" cy="16.5" r="5"/><line x1="15" y1="16.5" x2="17" y2="16.5"/><line x1="5" y1="14.5" x2="2" y2="12.5"/><line x1="27" y1="14.5" x2="30" y2="12.5"/></symbol>
+  <symbol id="icon-sports" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10.5"/><path d="M16 5.5v21M5.5 16h21M9 9c3 3 11 3 14 0M9 23c3-3 11-3 14 0"/></symbol>
+  <symbol id="icon-stationery" viewBox="0 0 32 32"><path d="M8.2 23.8 6 28l4.2-2.2L24 12 20 8 6.2 21.8z"/><line x1="18" y1="10" x2="22" y2="14"/></symbol>
+  <symbol id="icon-handmade" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10.5"/><path d="M8.5 12c4 2 6.5 6.5 4.5 11M12.5 6.5c2.2 5.5 8.5 8.5 13 6M9.5 21c4 0 8.5-3.2 9.5-8.5"/></symbol>
+  <symbol id="icon-other" viewBox="0 0 32 32"><path d="M16 5.5 4.5 11v11L16 27.5 27.5 22V11L16 5.5z"/><path d="M4.5 11 16 16.5l11.5-5.5M16 16.5v11"/></symbol>
+
+  <!-- product / item icons -->
+  <symbol id="icon-calculator" viewBox="0 0 32 32"><rect x="8" y="4" width="16" height="24" rx="2.4"/><line x1="11" y1="9" x2="21" y2="9"/><rect x="10.5" y="13" width="4" height="3" rx="0.6"/><rect x="17.5" y="13" width="4" height="3" rx="0.6"/><rect x="10.5" y="18" width="4" height="3" rx="0.6"/><rect x="17.5" y="18" width="4" height="3" rx="0.6"/><rect x="10.5" y="23" width="11" height="3" rx="0.6"/></symbol>
+  <symbol id="icon-yoga" viewBox="0 0 32 32"><rect x="3.5" y="13" width="21" height="6" rx="3"/><circle cx="27" cy="16" r="4"/></symbol>
+  <symbol id="icon-guitar" viewBox="0 0 32 32"><circle cx="11.5" cy="22" r="7.2"/><circle cx="14.5" cy="13.5" r="4.6"/><line x1="17" y1="10" x2="27" y2="4"/><rect x="25" y="2" width="5" height="4" rx="1"/></symbol>
+  <symbol id="icon-plant" viewBox="0 0 32 32"><path d="M10 20h12l-2 8H12l-2-8z"/><path d="M16 20C14 14 10 12 6 11c2 5 5 8 10 9z"/><path d="M16 20c2-7 6-9 11-10-1 6-5 9-11 10z"/></symbol>
+  <symbol id="icon-camera" viewBox="0 0 32 32"><rect x="4" y="10.5" width="24" height="16" rx="3"/><path d="M11.5 10.5 13 7.5h6l1.5 3"/><circle cx="16" cy="18.5" r="5"/><circle cx="16" cy="18.5" r="1.7" fill="currentColor" stroke="none"/></symbol>
+
+  <!-- why-us icons -->
+  <symbol id="icon-community" viewBox="0 0 24 24"><circle cx="8" cy="8.5" r="3"/><circle cx="16" cy="8.5" r="3"/><path d="M2.5 19.5c0-3.6 2.8-5.6 5.5-5.6s5.5 2 5.5 5.6"/><path d="M11 14.2c.9-.5 2-.8 3-.8 2.7 0 5.5 2 5.5 5.6"/></symbol>
+  <symbol id="icon-reuse" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 0 1 12-6"/><polyline points="15,3 16.5,6 20,5.3"/><path d="M19.5 12a7.5 7.5 0 0 1-12 6"/><polyline points="9,21 7.5,18 4,18.7"/></symbol>
+
+  <!-- process icon -->
+  <symbol id="icon-find" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="20.5" y2="20.5"/></symbol>
+</svg>
+
+<!-- ============ TOAST CONTAINER ============ -->
+<div id="toast-container"></div>
+
+<!-- ============ MOBILE PANEL ============ -->
+<div class="mobile-panel" id="mobilePanel">
+  <div class="mobile-panel-top">
+    <a class="logo" href="#top"><svg class="icon"><use href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+    <button class="icon-btn" id="mobileClose" aria-label="Close menu"><svg class="icon"><use href="#icon-close"></use></svg></button>
+  </div>
+  <a href="#top">Home</a>
+  <a href="campustriftstoremarketplace.html">Marketplace</a>
+  <a href="#categories">Categories</a>
+  <button class="btn btn-primary btn-block" data-demo="Sell an Item"><svg class="icon" style="width:18px;height:18px"><use href="#icon-plus"></use></svg>Sell an Item</button>
+</div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="logo" href="#top"><svg class="icon"><use href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+    <nav class="nav-links">
+      <a href="#top">Home</a>
+      <a href="#" data-demo="Marketplace">Marketplace</a>
+      <a href="#categories">Categories</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn desktop-only" data-demo="Search" aria-label="Search"><svg class="icon"><use href="#icon-search"></use></svg></button>
+      <button class="icon-btn wishlist desktop-only" data-demo="Wishlist" aria-label="Wishlist"><svg class="icon"><use href="#icon-heart"></use></svg></button>
+      <button class="icon-btn desktop-only" data-demo="Messages" aria-label="Messages"><svg class="icon"><use href="#icon-message"></use></svg></button>
+      <button class="icon-btn desktop-only" data-demo="Profile" aria-label="Profile"><svg class="icon"><use href="#icon-user"></use></svg></button>
+      <button class="btn btn-primary btn-sm nav-sell desktop-only" data-demo="Sell an Item"><svg class="icon" style="width:16px;height:16px"><use href="#icon-plus"></use></svg>Sell an Item</button>
+      <button class="icon-btn hamburger" id="hamburgerBtn" aria-label="Open menu"><svg class="icon"><use href="#icon-menu"></use></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="reveal in">
+        <span class="hero-eyebrow"><svg class="icon"><use href="#icon-tag"></use></svg>Only for students on your campus</span>
+        <h1>Find something<br>worth <em>keeping.</em></h1>
+        <p class="hero-sub">Buy, sell and discover pre-loved things from students around you.</p>
+
+        <form class="search-bar" id="heroSearch">
+          <svg class="icon"><use href="#icon-search"></use></svg>
+          <input type="text" placeholder="Search clothes, books, electronics..." aria-label="Search Campus Thrift">
+          <button type="submit"><svg class="icon" style="width:16px;height:16px"><use href="#icon-search"></use></svg><span>Search</span></button>
+        </form>
+
+        <div class="hero-ctas">
+          <button class="btn btn-primary" data-demo="Marketplace">Browse Marketplace</button>
+          <button class="btn btn-secondary" data-demo="Sell an Item">Sell Something</button>
+        </div>
+      </div>
+
+      <div class="hero-collage" aria-hidden="true">
+        <div class="collage-item c1">
+          <div class="collage-photo bg-a"><svg class="icon"><use href="#icon-clothes"></use></svg></div>
+          <div class="tag-chip">Like new</div>
+          <div class="collage-cap"><div class="cname">Denim Jacket</div><div class="cprice">₹850</div></div>
+        </div>
+        <div class="collage-item c2">
+          <div class="collage-photo bg-b"><svg class="icon"><use href="#icon-electronics"></use></svg></div>
+          <div class="tag-chip">Good</div>
+          <div class="collage-cap"><div class="cname">Headphones</div><div class="cprice">₹1,200</div></div>
+        </div>
+        <div class="collage-item c3">
+          <div class="collage-photo bg-c"><svg class="icon"><use href="#icon-books"></use></svg></div>
+          <div class="collage-cap"><div class="cname">Maths Textbook</div><div class="cprice">₹300</div></div>
+        </div>
+        <div class="collage-item c4">
+          <div class="collage-photo bg-d"><svg class="icon"><use href="#icon-accessories"></use></svg></div>
+          <div class="collage-cap"><div class="cname">Backpack</div><div class="cprice">₹700</div></div>
+        </div>
+        <div class="collage-item c5">
+          <div class="collage-photo bg-a"><svg class="icon"><use href="#icon-sports"></use></svg></div>
+          <div class="tag-chip">Like new</div>
+          <div class="collage-cap"><div class="cname">Sneakers</div><div class="cprice">₹1,500</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CATEGORIES ============ -->
+  <section class="section" id="categories">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Browse</span>
+        <h2 class="section-title">Shop by category</h2>
+        <p class="section-sub">Find what you need. Give what you don't.</p>
+      </div>
+      <div class="category-grid reveal">
+        <a class="category-card" href="#" data-demo="Marketplace → Clothes">
+          <div class="category-icon-wrap"><svg class="icon"><use href="#icon-clothes"></use></svg></div>
+          <div><div class="category-name">Clothes</div><div class="category-count">128 items</div></div>
+        </a>
+        <a class="category-card" href="#" data-demo="Marketplace → Electronics">
+          <div class="category-icon-wrap"><svg class="icon"><use href="#icon-electronics"></use></svg></div>
+          <div><div class="category-name">Electronics</div><div class="category-count">76 items</div></div>
+        </a>
+        <a class="category-card" href="#" data-demo="Marketplace → Books & Study">
+          <div class="category-icon-wrap"><svg class="icon"><use href="#icon-books"></use></svg></div>
+          <div><div class="category-name">Books &amp; Study</div><div class="category-count">154 items</div></div>
+        </a>
+        <a class="category-card" href="#" data-demo="Marketplace → Furniture">
+          <div class="category-icon-wrap"><svg class="icon"><use href="#icon-furniture"></use></svg></div>
+          <div><div class="category-name">Furniture</div><div class="category-count">42 items</div></div>
+        </a>
+        <a class="category-card" href="#" data-demo="Marketplace → Accessories">
+          <div class="category-icon-wrap"><svg class="icon"><use href="#icon-accessories"></use></svg></div>
+          <div><div class="category-name">Accessories</div><div class="category-count">89 items</div></div>
+        </a>
+        <a class="category-card" href="#" data-demo="Marketplace → Sports">
+          <div class="category-icon-wrap"><svg class="icon"><use href="#icon-sports"></use></svg></div>
+          <div><div class="category-name">Sports</div><div class="category-count">37 items</div></div>
+        </a>
+        <a class="category-card" href="#" data-demo="Marketplace → Stationery">
+          <div class="category-icon-wrap"><svg class="icon"><use href="#icon-stationery"></use></svg></div>
+          <div><div class="category-name">Stationery</div><div class="category-count">63 items</div></div>
+        </a>
+        <a class="category-card" href="#" data-demo="Marketplace → Handmade">
+          <div class="category-icon-wrap"><svg class="icon"><use href="#icon-handmade"></use></svg></div>
+          <div><div class="category-name">Handmade</div><div class="category-count">28 items</div></div>
+        </a>
+        <a class="category-card" href="#" data-demo="Marketplace → Other">
+          <div class="category-icon-wrap"><svg class="icon"><use href="#icon-other"></use></svg></div>
+          <div><div class="category-name">Other</div><div class="category-count">51 items</div></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRENDING ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Popular right now</span>
+        <h2 class="section-title">Trending on campus</h2>
+        <p class="section-sub">The things everyone seems to be looking for.</p>
+      </div>
+
+      <div class="product-grid reveal">
+
+        <article class="product-card" data-demo="Product → Vintage Denim Jacket">
+          <div class="product-photo bg-a">
+            <svg class="icon"><use href="#icon-clothes"></use></svg>
+            <span class="product-condition">Like new</span>
+            <button class="wishlist-btn" aria-label="Save Vintage Denim Jacket" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Vintage Denim Jacket</div>
+            <div class="product-price">₹850</div>
+            <div class="product-meta">
+              <span class="product-seller">Aisha</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>Hostel Block C</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-demo="Product → Sony Headphones">
+          <div class="product-photo bg-b">
+            <svg class="icon"><use href="#icon-electronics"></use></svg>
+            <span class="product-condition">Good</span>
+            <button class="wishlist-btn" aria-label="Save Sony Headphones" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Sony Headphones — WH-CH510</div>
+            <div class="product-price">₹1,200</div>
+            <div class="product-meta">
+              <span class="product-seller">Rohan</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>North Campus</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-demo="Product → Engineering Mathematics Book">
+          <div class="product-photo bg-c">
+            <svg class="icon"><use href="#icon-books"></use></svg>
+            <span class="product-condition">Well loved</span>
+            <button class="wishlist-btn" aria-label="Save Engineering Mathematics Book" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Engineering Mathematics — B.S. Grewal</div>
+            <div class="product-price">₹300</div>
+            <div class="product-meta">
+              <span class="product-seller">Priya</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>Library Block</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-demo="Product → Nike Sneakers">
+          <div class="product-photo bg-d">
+            <svg class="icon"><use href="#icon-sports"></use></svg>
+            <span class="product-condition">Like new</span>
+            <button class="wishlist-btn" aria-label="Save Nike Sneakers" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Nike Sneakers — Revolution 6</div>
+            <div class="product-price">₹1,500</div>
+            <div class="product-meta">
+              <span class="product-seller">Karthik</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>Boys Hostel</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-demo="Product → Study Table Lamp">
+          <div class="product-photo bg-a">
+            <svg class="icon"><use href="#icon-other"></use></svg>
+            <span class="product-condition">Good</span>
+            <button class="wishlist-btn" aria-label="Save Study Table Lamp" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Study Table Lamp</div>
+            <div class="product-price">₹450</div>
+            <div class="product-meta">
+              <span class="product-seller">Neha</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>Girls Hostel 2</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-demo="Product → Backpack">
+          <div class="product-photo bg-b">
+            <svg class="icon"><use href="#icon-accessories"></use></svg>
+            <span class="product-condition">Good</span>
+            <button class="wishlist-btn" aria-label="Save Backpack" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Backpack — Wildcraft</div>
+            <div class="product-price">₹700</div>
+            <div class="product-meta">
+              <span class="product-seller">Vikram</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>Main Gate</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ JUST ADDED ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head-row reveal">
+        <div class="section-head" style="margin-bottom:0;">
+          <span class="eyebrow">Fresh listings</span>
+          <h2 class="section-title">Just added</h2>
+          <p class="section-sub">Fresh listings from your campus community.</p>
+        </div>
+        <a class="view-all" href="#" data-demo="Marketplace">View all <svg class="icon"><use href="#icon-arrow-right"></use></svg></a>
+      </div>
+
+      <div class="product-grid reveal">
+
+        <article class="product-card" data-demo="Product → Cotton Kurta Set">
+          <div class="product-photo bg-c">
+            <svg class="icon"><use href="#icon-clothes"></use></svg>
+            <span class="product-condition">Like new</span>
+            <button class="wishlist-btn" aria-label="Save Cotton Kurta Set" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Cotton Kurta Set</div>
+            <div class="product-price">₹550</div>
+            <div class="product-meta">
+              <span class="product-seller">Meera</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>Girls Hostel 1</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-demo="Product → Casio Scientific Calculator">
+          <div class="product-photo bg-d">
+            <svg class="icon"><use href="#icon-calculator"></use></svg>
+            <span class="product-condition">Good</span>
+            <button class="wishlist-btn" aria-label="Save Casio Scientific Calculator" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Casio Scientific Calculator</div>
+            <div class="product-price">₹400</div>
+            <div class="product-meta">
+              <span class="product-seller">Aditya</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>Engineering Block</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-demo="Product → Yoga Mat">
+          <div class="product-photo bg-a">
+            <svg class="icon"><use href="#icon-yoga"></use></svg>
+            <span class="product-condition">Like new</span>
+            <button class="wishlist-btn" aria-label="Save Yoga Mat" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Yoga Mat</div>
+            <div class="product-price">₹350</div>
+            <div class="product-meta">
+              <span class="product-seller">Sanya</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>Sports Complex</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-demo="Product → Acoustic Guitar">
+          <div class="product-photo bg-b">
+            <svg class="icon"><use href="#icon-guitar"></use></svg>
+            <span class="product-condition">Good</span>
+            <button class="wishlist-btn" aria-label="Save Acoustic Guitar" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Acoustic Guitar — Yamaha</div>
+            <div class="product-price">₹3,200</div>
+            <div class="product-meta">
+              <span class="product-seller">Dev</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>Music Room</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-demo="Product → Money Plant">
+          <div class="product-photo bg-c">
+            <svg class="icon"><use href="#icon-plant"></use></svg>
+            <span class="product-condition">New</span>
+            <button class="wishlist-btn" aria-label="Save Money Plant" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Potted Money Plant</div>
+            <div class="product-price">₹150</div>
+            <div class="product-meta">
+              <span class="product-seller">Farah</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>North Campus</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card" data-demo="Product → Polaroid Camera">
+          <div class="product-photo bg-d">
+            <svg class="icon"><use href="#icon-camera"></use></svg>
+            <span class="product-condition">Like new</span>
+            <button class="wishlist-btn" aria-label="Save Polaroid Camera" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>
+            <span class="view-item">View item</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Polaroid Camera</div>
+            <div class="product-price">₹2,000</div>
+            <div class="product-meta">
+              <span class="product-seller">Ananya</span>
+              <span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>Hostel Block A</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MADE ON CAMPUS ============ -->
+  <section class="section section-sage">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Student businesses</span>
+        <h2 class="section-title">Made on campus.</h2>
+        <p class="section-sub">Discover products and small businesses created by students in your community.</p>
+      </div>
+
+      <div class="shop-grid reveal">
+
+        <div class="shop-card">
+          <div class="shop-banner bg-a">
+            <svg class="icon"><use href="#icon-handmade"></use></svg>
+            <div class="shop-avatar"><svg class="icon"><use href="#icon-user"></use></svg></div>
+          </div>
+          <div class="shop-body">
+            <div class="shop-name">Mia's Crochet Corner</div>
+            <div class="shop-desc">Handmade crochet accessories, made to order.</div>
+            <div class="shop-stats">
+              <span>24 products</span><span class="dot"></span>
+              <span class="rating"><svg class="icon"><use href="#icon-star"></use></svg>4.8</span>
+            </div>
+            <button class="btn btn-secondary btn-sm btn-block" data-demo="Shop → Mia's Crochet Corner">Visit Shop</button>
+          </div>
+        </div>
+
+        <div class="shop-card">
+          <div class="shop-banner bg-b">
+            <svg class="icon"><use href="#icon-stationery"></use></svg>
+            <div class="shop-avatar"><svg class="icon"><use href="#icon-user"></use></svg></div>
+          </div>
+          <div class="shop-body">
+            <div class="shop-name">The Study Studio</div>
+            <div class="shop-desc">Custom stationery &amp; study kits for every semester.</div>
+            <div class="shop-stats">
+              <span>36 products</span><span class="dot"></span>
+              <span class="rating"><svg class="icon"><use href="#icon-star"></use></svg>4.9</span>
+            </div>
+            <button class="btn btn-secondary btn-sm btn-block" data-demo="Shop → The Study Studio">Visit Shop</button>
+          </div>
+        </div>
+
+        <div class="shop-card">
+          <div class="shop-banner bg-c">
+            <svg class="icon"><use href="#icon-other"></use></svg>
+            <div class="shop-avatar"><svg class="icon"><use href="#icon-user"></use></svg></div>
+          </div>
+          <div class="shop-body">
+            <div class="shop-name">Campus Prints</div>
+            <div class="shop-desc">Posters, stickers &amp; art from student illustrators.</div>
+            <div class="shop-stats">
+              <span>42 products</span><span class="dot"></span>
+              <span class="rating"><svg class="icon"><use href="#icon-star"></use></svg>4.7</span>
+            </div>
+            <button class="btn btn-secondary btn-sm btn-block" data-demo="Shop → Campus Prints">Visit Shop</button>
+          </div>
+        </div>
+
+        <div class="shop-card">
+          <div class="shop-banner bg-d">
+            <svg class="icon"><use href="#icon-accessories"></use></svg>
+            <div class="shop-avatar"><svg class="icon"><use href="#icon-user"></use></svg></div>
+          </div>
+          <div class="shop-body">
+            <div class="shop-name">Doodle Dukaan</div>
+            <div class="shop-desc">Hand-painted tote bags, pins &amp; badges.</div>
+            <div class="shop-stats">
+              <span>18 products</span><span class="dot"></span>
+              <span class="rating"><svg class="icon"><use href="#icon-star"></use></svg>4.6</span>
+            </div>
+            <button class="btn btn-secondary btn-sm btn-block" data-demo="Shop → Doodle Dukaan">Visit Shop</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHY CAMPUS THRIFT ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Why Campus Thrift</span>
+        <h2 class="section-title">More than a marketplace.</h2>
+      </div>
+
+      <div class="why-grid reveal">
+        <div class="why-card">
+          <div class="why-icon"><svg class="icon"><use href="#icon-community"></use></svg></div>
+          <h3>Buy from your community</h3>
+          <p>Find useful, affordable things from students around you.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><svg class="icon"><use href="#icon-reuse"></use></svg></div>
+          <h3>Give things another life</h3>
+          <p>Sell things you no longer need instead of letting them go to waste.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><svg class="icon"><use href="#icon-pin"></use></svg></div>
+          <h3>Keep it on campus</h3>
+          <p>Meet, exchange and communicate within your college community.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="section section-sage">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">The process</span>
+        <h2 class="section-title">It's pretty simple.</h2>
+      </div>
+
+      <div class="steps reveal">
+        <div class="step">
+          <div class="step-num"><span class="num">01</span></div>
+          <div class="step-icon"><svg class="icon"><use href="#icon-find"></use></svg></div>
+          <h3>Find</h3>
+          <p>Browse products or search for exactly what you need.</p>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step">
+          <div class="step-num"><span class="num">02</span></div>
+          <div class="step-icon"><svg class="icon"><use href="#icon-message"></use></svg></div>
+          <h3>Connect</h3>
+          <p>Message the seller and discuss the price, payment and pickup.</p>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step">
+          <div class="step-num"><span class="num">03</span></div>
+          <div class="step-icon"><svg class="icon"><use href="#icon-exchange"></use></svg></div>
+          <h3>Exchange</h3>
+          <p>Meet at a convenient campus location and complete the exchange.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SELL CTA ============ -->
+  <section class="section sell-cta">
+    <div class="container">
+      <div class="sell-cta-inner reveal">
+        <h2>Got something someone else might love?</h2>
+        <p>Turn the things you don't need anymore into something useful for someone on campus.</p>
+        <button class="btn btn-cream" data-demo="Sell an Item"><svg class="icon" style="width:18px;height:18px"><use href="#icon-plus"></use></svg>Sell an Item</button>
+        <p class="sell-cta-foot">It only takes a few minutes to list.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRUST ============ -->
+  <section class="section">
+    <div class="container trust-grid">
+      <div class="reveal">
+        <span class="eyebrow">Community</span>
+        <h2 class="section-title" style="margin-bottom:16px;">Your campus. Your community.</h2>
+        <p class="section-sub" style="margin-bottom:0;">Campus Thrift only works because the people on it are people you actually go to college with.</p>
+      </div>
+
+      <div class="trust-list reveal">
+        <div class="trust-item">
+          <div class="trust-icon"><svg class="icon"><use href="#icon-pin"></use></svg></div>
+          <div><h4>College-only marketplace</h4><p>Every account is tied to a verified student email.</p></div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><svg class="icon"><use href="#icon-community"></use></svg></div>
+          <div><h4>Student-focused community</h4><p>Built around the way your campus actually buys and sells.</p></div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><svg class="icon"><use href="#icon-message"></use></svg></div>
+          <div><h4>Direct buyer-seller communication</h4><p>Chat, agree on details and settle things directly.</p></div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><svg class="icon"><use href="#icon-exchange"></use></svg></div>
+          <div><h4>Campus pickup options</h4><p>Meet at common, familiar spots around college.</p></div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><svg class="icon"><use href="#icon-check"></use></svg></div>
+          <div><h4>Community guidelines</h4><p>Clear expectations for how members treat each other.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container footer-top">
+    <div class="footer-brand">
+      <a class="logo" href="#top"><svg class="icon"><use href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+      <p>Buy. Sell. Reuse. Together.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Navigate</h5>
+      <ul>
+        <li><a href="#top">Home</a></li>
+        <li><a href="#" data-demo="Marketplace">Marketplace</a></li>
+        <li><a href="#categories">Categories</a></li>
+        <li><a href="#" data-demo="Sell an Item">Sell an Item</a></li>
+        <li><a href="#" data-demo="Wishlist">Wishlist</a></li>
+        <li><a href="#" data-demo="Messages">Messages</a></li>
+        <li><a href="#" data-demo="Profile">Profile</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Support</h5>
+      <ul>
+        <li><a href="#" data-demo="How It Works">How It Works</a></li>
+        <li><a href="#" data-demo="Safety Guidelines">Safety Guidelines</a></li>
+        <li><a href="#" data-demo="Community Rules">Community Rules</a></li>
+        <li><a href="#" data-demo="FAQ">FAQ</a></li>
+        <li><a href="#" data-demo="Report a Problem">Report a Problem</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 Campus Thrift</span>
+    <span class="footer-tag"><svg class="icon"><use href="#icon-tag"></use></svg>Buy. Sell. Reuse. Together.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---- Navbar scroll state ----
+  var nav = document.getElementById('siteNav');
+  function onScroll(){
+    if(window.scrollY > 24){ nav.classList.add('is-scrolled'); }
+    else{ nav.classList.remove('is-scrolled'); }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // ---- Mobile menu ----
+  var hamburger = document.getElementById('hamburgerBtn');
+  var panel = document.getElementById('mobilePanel');
+  var mobileClose = document.getElementById('mobileClose');
+  function openPanel(){ panel.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closePanel(){ panel.classList.remove('open'); document.body.style.overflow=''; }
+  hamburger.addEventListener('click', openPanel);
+  mobileClose.addEventListener('click', closePanel);
+  panel.querySelectorAll('a, button').forEach(function(el){
+    el.addEventListener('click', function(){ closePanel(); });
+  });
+
+  // ---- Toast (demo interactions for a future Marketplace/Details/etc.) ----
+  var toastContainer = document.getElementById('toast-container');
+  function showToast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = '<svg class="icon"><use href="#icon-tag"></use></svg><span></span>';
+    t.querySelector('span').textContent = msg;
+    toastContainer.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 320);
+    }, 2200);
+  }
+
+  document.querySelectorAll('[data-demo]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      if(el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href') !== '#'){ return; }
+      e.preventDefault();
+      showToast('Opening ' + el.getAttribute('data-demo') + ' \u2192 coming soon');
+    });
+  });
+
+  // ---- Hero search ----
+  document.getElementById('heroSearch').addEventListener('submit', function(e){
+    e.preventDefault();
+    var q = this.querySelector('input').value.trim();
+    showToast(q ? 'Searching for \u201c' + q + '\u201d' : 'Enter something to search for');
+  });
+
+  // ---- Wishlist toggle ----
+  document.querySelectorAll('[data-wishlist]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      e.preventDefault();
+      btn.classList.toggle('active');
+      btn.classList.remove('pop');
+      void btn.offsetWidth;
+      btn.classList.add('pop');
+      var name = btn.closest('[data-demo]') ? btn.closest('[data-demo]').getAttribute('data-demo').replace('Product \u2192 ','') : 'item';
+      showToast(btn.classList.contains('active') ? 'Saved ' + name + ' to wishlist' : 'Removed ' + name + ' from wishlist');
+    });
+  });
+  var navWishlist = document.querySelector('.icon-btn.wishlist');
+  if(navWishlist){
+    navWishlist.addEventListener('click', function(){ navWishlist.classList.toggle('active'); });
+  }
+
+  // ---- Scroll reveal ----
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add('in'); io.unobserve(entry.target); }
+      });
+    }, {threshold:0.12});
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+
+</body>
+</html>

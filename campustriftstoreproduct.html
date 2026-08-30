@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details — Campus Thrift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS (shared) ============ */
+  :root{
+    --forest:#183C35;
+    --forest-dark:#0F2823;
+    --sage:#A8C3B0;
+    --sage-light:#E9EFE6;
+    --cream:#F7F4ED;
+    --card:#FDFBF6;
+    --ink:#202624;
+    --muted:#6F7773;
+    --terracotta:#C86B4A;
+    --terracotta-tint:#F3E1D6;
+    --line:rgba(24,60,53,0.12);
+    --shadow-sm:0 2px 10px rgba(24,60,53,0.06);
+    --shadow-md:0 14px 30px rgba(24,60,53,0.10);
+    --shadow-lg:0 22px 48px rgba(24,60,53,0.16);
+    --radius-card:16px;
+    --radius-btn:9px;
+    --radius-field:12px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --dur:0.25s;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--cream);color:var(--ink);font-family:var(--font-body);
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;margin:0;padding:0;}
+  button{font-family:inherit;cursor:pointer;}
+  h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0;color:var(--forest);}
+  p{margin:0;}
+  :focus-visible{outline:2px solid var(--terracotta);outline-offset:3px;border-radius:4px;}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
+  }
+
+  .container{max-width:1240px;margin:0 auto;padding:0 32px;}
+  .icon{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+  .icon-fill{fill:currentColor;stroke:none;}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;font-size:0.78rem;font-weight:700;
+    letter-spacing:0.12em;text-transform:uppercase;color:var(--terracotta);margin-bottom:14px;
+  }
+  .eyebrow::before{content:"";width:18px;height:1.5px;background:var(--terracotta);display:inline-block;}
+
+  .section{padding:96px 0;}
+  .section-head{max-width:640px;margin-bottom:44px;}
+  .section-title{font-size:clamp(1.9rem,3.2vw,2.6rem);line-height:1.15;margin-bottom:14px;}
+  .section-sub{color:var(--muted);font-size:1.05rem;max-width:520px;}
+
+  /* ============ BUTTONS ============ */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 28px;border-radius:var(--radius-btn);font-weight:600;font-size:0.95rem;
+    border:1.5px solid transparent;
+    transition:transform var(--dur) ease, background var(--dur) ease, opacity var(--dur) ease, box-shadow var(--dur) ease;
+    white-space:nowrap;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--forest);color:var(--cream);}
+  .btn-primary:hover{background:var(--forest-dark);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+  .btn-secondary{background:transparent;color:var(--forest);border-color:var(--forest);}
+  .btn-secondary:hover{background:var(--forest);color:var(--cream);transform:translateY(-2px);}
+  .btn-block{width:100%;}
+  .btn.is-sent{background:var(--sage-light);color:var(--forest);border-color:var(--sage-light);cursor:default;}
+  .btn.is-sent:hover{transform:none;box-shadow:none;}
+  .btn:disabled{opacity:0.85;pointer-events:none;}
+
+  /* ============ NAVBAR ============ */
+  header.nav{
+    position:sticky;top:0;z-index:100;background:rgba(247,244,237,0.92);
+    backdrop-filter:blur(10px);box-shadow:var(--shadow-sm);border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;max-width:1240px;margin:0 auto;}
+  .logo{font-family:var(--font-display);font-size:1.35rem;letter-spacing:0.01em;color:var(--forest);display:flex;align-items:center;gap:9px;}
+  .logo .icon{width:24px;height:24px;color:var(--terracotta);}
+  .nav-links{display:flex;align-items:center;gap:36px;}
+  .nav-links a{font-size:0.94rem;font-weight:500;color:var(--ink);position:relative;padding:4px 0;transition:color var(--dur);}
+  .nav-links a::after{content:"";position:absolute;left:0;bottom:-2px;width:0;height:1.5px;background:var(--terracotta);transition:width var(--dur) ease;}
+  .nav-links a:hover{color:var(--terracotta);}
+  .nav-links a:hover::after{width:100%;}
+  .nav-links a.active{color:var(--forest);font-weight:700;}
+  .nav-links a.active::after{width:100%;background:var(--forest);}
+  .nav-actions{display:flex;align-items:center;gap:6px;}
+  .icon-btn{width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--forest);transition:background var(--dur);position:relative;}
+  .icon-btn:hover{background:rgba(24,60,53,0.08);}
+  .icon-btn .icon{width:20px;height:20px;}
+  .icon-btn.wishlist.active{color:var(--terracotta);}
+  .icon-btn.wishlist.active .icon{fill:var(--terracotta);}
+  .nav-sell{margin-left:10px;}
+  .hamburger{display:none;}
+
+  .mobile-panel{display:none;position:fixed;inset:0;z-index:150;background:var(--cream);padding:24px 32px;transform:translateY(-100%);transition:transform 0.35s ease;overflow-y:auto;}
+  .mobile-panel.open{transform:translateY(0);}
+  .mobile-panel-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;}
+  .mobile-panel a{display:block;font-family:var(--font-display);font-size:1.6rem;color:var(--forest);padding:14px 0;border-bottom:1px solid var(--line);}
+  .mobile-panel a.active{font-weight:700;}
+  .mobile-panel .btn{margin-top:28px;}
+
+  /* ============ PRODUCT CARD (shared, for Related Products) ============ */
+  .product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:26px;}
+  .product-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-card);overflow:hidden;transition:transform var(--dur) ease, box-shadow var(--dur) ease;position:relative;cursor:pointer;}
+  .product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);}
+  .product-photo{aspect-ratio:1/0.92;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .product-photo .icon{width:38%;height:38%;color:var(--forest);opacity:0.82;stroke-width:1.3;transition:transform 0.4s ease;}
+  .product-card:hover .product-photo .icon{transform:scale(1.08);}
+  .product-condition{position:absolute;top:14px;left:14px;background:var(--cream);border:1px solid var(--forest);color:var(--forest);font-size:0.66rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:4px 10px 4px 16px;border-radius:0 7px 7px 0;}
+  .product-condition::before{content:"";position:absolute;left:6px;top:50%;transform:translateY(-50%);width:3px;height:3px;border-radius:50%;background:var(--forest);}
+  .wishlist-btn{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(253,251,246,0.9);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--forest);opacity:0.85;transition:opacity var(--dur), transform var(--dur), background var(--dur);}
+  .product-card:hover .wishlist-btn{opacity:1;}
+  .wishlist-btn:hover{background:#fff;transform:scale(1.08);}
+  .wishlist-btn .icon{width:17px;height:17px;}
+  .wishlist-btn.active{color:var(--terracotta);}
+  .wishlist-btn.active .icon{fill:var(--terracotta);}
+  .wishlist-btn.pop{animation:pop 0.35s ease;}
+  @keyframes pop{0%{transform:scale(1);}40%{transform:scale(1.3);}100%{transform:scale(1);}}
+  .view-item{position:absolute;bottom:14px;left:50%;transform:translate(-50%,10px);background:var(--forest);color:var(--cream);font-size:0.78rem;font-weight:600;padding:9px 18px;border-radius:99px;opacity:0;transition:opacity var(--dur), transform var(--dur);white-space:nowrap;box-shadow:var(--shadow-sm);}
+  .product-card:hover .view-item{opacity:1;transform:translate(-50%,0);}
+  .product-info{padding:16px 18px 18px;}
+  .product-name{font-weight:700;font-size:0.98rem;color:var(--ink);margin-bottom:6px;}
+  .product-price{font-family:var(--font-display);font-size:1.2rem;color:var(--forest);margin-bottom:10px;}
+  .product-meta{display:flex;align-items:center;justify-content:space-between;font-size:0.8rem;color:var(--muted);gap:8px;}
+  .product-seller{font-weight:600;color:var(--ink);transition:color var(--dur);}
+  .product-seller:hover{color:var(--terracotta);}
+  .product-loc{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+  .product-loc .icon{width:13px;height:13px;color:var(--terracotta);}
+
+  /* ============ REVEAL / TOAST (shared) ============ */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity 0.5s ease, transform 0.5s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+  #toast-container{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;}
+  .toast{background:var(--forest);color:var(--cream);padding:12px 22px;border-radius:99px;font-size:0.88rem;font-weight:500;box-shadow:var(--shadow-lg);opacity:0;transform:translateY(12px);transition:opacity 0.3s ease, transform 0.3s ease;display:flex;align-items:center;gap:8px;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateY(0);}
+  .toast .icon{width:15px;height:15px;color:var(--terracotta);}
+
+  /* ============ FOOTER (shared) ============ */
+  footer{background:var(--forest);color:rgba(247,244,237,0.85);padding:72px 0 0;}
+  .footer-top{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:48px;padding-bottom:52px;border-bottom:1px solid rgba(247,244,237,0.14);}
+  .footer-brand .logo{color:var(--cream);margin-bottom:14px;}
+  .footer-brand .logo .icon{color:var(--terracotta);}
+  .footer-brand p{color:rgba(247,244,237,0.6);font-size:0.92rem;max-width:260px;}
+  .footer-col h5{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(247,244,237,0.5);margin-bottom:18px;font-weight:700;}
+  .footer-col ul{display:flex;flex-direction:column;gap:12px;}
+  .footer-col a{font-size:0.92rem;color:rgba(247,244,237,0.82);transition:color var(--dur);}
+  .footer-col a:hover{color:var(--terracotta);}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding:24px 0;font-size:0.82rem;color:rgba(247,244,237,0.5);flex-wrap:wrap;gap:10px;}
+  .footer-tag{display:flex;align-items:center;gap:6px;}
+  .footer-tag .icon{width:14px;height:14px;color:var(--terracotta);}
+
+  /* ============================================================ */
+  /* ============ PRODUCT DETAILS PAGE COMPONENTS ================ */
+  /* ============================================================ */
+
+  .back-link{display:inline-flex;align-items:center;gap:8px;font-size:0.9rem;font-weight:600;color:var(--muted);padding:22px 0 0;transition:color var(--dur);}
+  .back-link:hover{color:var(--forest);}
+  .back-link .icon{width:16px;height:16px;transition:transform var(--dur);}
+  .back-link:hover .icon{transform:translateX(-3px);}
+
+  .product-hero{padding:22px 0 24px;}
+  .product-hero-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:56px;align-items:start;}
+
+  /* -------- gallery -------- */
+  .main-image-wrap{position:relative;border-radius:18px;overflow:hidden;box-shadow:var(--shadow-md);border:1px solid var(--line);}
+  .main-image{aspect-ratio:1/0.86;display:flex;align-items:center;justify-content:center;}
+  .main-image .icon{width:42%;height:42%;color:var(--forest);opacity:0.85;stroke-width:1.15;transition:opacity 0.35s ease;}
+  .main-wishlist{position:absolute;top:18px;right:18px;width:48px;height:48px;border-radius:50%;background:rgba(253,251,246,0.92);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--forest);box-shadow:var(--shadow-sm);transition:transform var(--dur) ease, background var(--dur) ease;}
+  .main-wishlist:hover{background:#fff;transform:scale(1.06);}
+  .main-wishlist .icon{width:22px;height:22px;}
+  .main-wishlist.active{color:var(--terracotta);}
+  .main-wishlist.active .icon{fill:var(--terracotta);}
+  .main-wishlist.pop{animation:pop 0.35s ease;}
+
+  .thumbnails{display:flex;gap:14px;margin-top:16px;}
+  .thumb{width:84px;height:84px;border-radius:12px;border:2px solid transparent;overflow:hidden;background:none;padding:0;flex-shrink:0;cursor:pointer;transition:border-color var(--dur) ease, transform var(--dur) ease;}
+  .thumb-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+  .thumb-inner .icon{width:46%;height:46%;color:var(--forest);opacity:0.8;stroke-width:1.3;}
+  .thumb:hover{transform:translateY(-2px);}
+  .thumb.active{border-color:var(--forest);}
+
+  .bg-a{background:linear-gradient(150deg,var(--sage-light),var(--card) 70%);}
+  .bg-b{background:linear-gradient(150deg,var(--terracotta-tint),var(--card) 70%);}
+  .bg-c{background:linear-gradient(150deg,var(--sage) 0%, var(--sage-light) 60%, var(--card) 100%);}
+  .bg-d{background:linear-gradient(150deg,#EFE6D8,var(--card) 70%);}
+
+  /* -------- right column -------- */
+  .product-info-col{padding-top:2px;}
+  .condition-badge-static{
+    display:inline-flex;align-items:center;position:relative;background:var(--cream);border:1px solid var(--forest);
+    color:var(--forest);font-size:0.7rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;
+    padding:5px 12px 5px 18px;border-radius:0 8px 8px 0;margin-bottom:18px;
+  }
+  .condition-badge-static::before{content:"";position:absolute;left:7px;top:50%;transform:translateY(-50%);width:3.5px;height:3.5px;border-radius:50%;background:var(--forest);}
+
+  .product-title{font-size:clamp(1.9rem,3vw,2.5rem);margin-bottom:12px;line-height:1.15;}
+  .product-price-lg{font-family:var(--font-display);font-size:2rem;color:var(--terracotta);margin-bottom:20px;}
+  .product-blurb{color:var(--muted);font-size:1.02rem;line-height:1.7;margin-bottom:30px;max-width:480px;}
+
+  .detail-list{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px;padding:22px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:30px;}
+  .detail-item h5{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:700;margin-bottom:6px;}
+  .detail-item p{font-size:0.95rem;font-weight:600;color:var(--ink);}
+
+  .seller-card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px 20px;margin-bottom:28px;cursor:pointer;transition:box-shadow var(--dur) ease, transform var(--dur) ease;}
+  .seller-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+  .seller-avatar{width:52px;height:52px;border-radius:50%;background:var(--sage-light);display:flex;align-items:center;justify-content:center;color:var(--forest);flex-shrink:0;}
+  .seller-avatar .icon{width:24px;height:24px;}
+  .seller-meta{flex:1;min-width:0;}
+  .seller-name{font-weight:700;font-size:1rem;color:var(--ink);}
+  .seller-sub{font-size:0.83rem;color:var(--muted);margin-top:2px;}
+  .seller-rating{display:inline-flex;align-items:center;gap:4px;font-size:0.83rem;color:var(--terracotta);font-weight:700;margin-top:3px;}
+  .seller-rating .icon{width:13px;height:13px;fill:var(--terracotta);stroke:none;}
+  .seller-link{display:inline-flex;align-items:center;gap:5px;font-size:0.85rem;font-weight:600;color:var(--forest);flex-shrink:0;}
+  .seller-link .icon{width:14px;height:14px;transition:transform var(--dur) ease;}
+  .seller-card:hover .seller-link .icon{transform:translateX(3px);}
+
+  .action-buttons{display:flex;gap:14px;margin-bottom:12px;}
+  .action-buttons .btn{flex:1;padding:16px 22px;font-size:0.98rem;}
+  .action-hint{font-size:0.85rem;color:var(--muted);margin-bottom:32px;}
+
+  .exchange-block{background:var(--sage-light);border-radius:var(--radius-card);padding:22px 24px;}
+  .exchange-block h4{font-size:0.95rem;margin-bottom:14px;color:var(--forest);font-family:var(--font-body);font-weight:700;}
+  .exchange-row{display:flex;gap:10px;align-items:flex-start;font-size:0.88rem;color:var(--ink);padding:6px 0;line-height:1.55;}
+  .exchange-row strong{font-weight:700;}
+
+  /* -------- about item (wide) -------- */
+  .about-section{padding:12px 0 20px;border-top:1px solid var(--line);margin-top:12px;}
+  .about-section .section-title{font-size:1.55rem;margin-bottom:16px;}
+  .about-text{color:var(--ink);font-size:1rem;line-height:1.8;max-width:760px;}
+
+  .info-strip{display:flex;flex-wrap:wrap;margin-top:8px;padding:24px 0 48px;}
+  .info-strip-item{padding:0 28px;border-right:1px solid var(--line);font-size:0.86rem;color:var(--muted);}
+  .info-strip-item:first-child{padding-left:0;}
+  .info-strip-item:last-child{border-right:none;}
+  .info-strip-item strong{display:block;color:var(--ink);font-weight:700;margin-top:3px;font-size:0.92rem;}
+
+  /* -------- related + mini cta -------- */
+  .related-section{padding:16px 0 20px;}
+  .mini-cta-section{padding:16px 0 88px;}
+  .mini-cta{background:var(--sage-light);border:1px solid var(--line);border-radius:var(--radius-card);padding:32px 36px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .mini-cta h3{font-size:1.25rem;margin-bottom:6px;}
+  .mini-cta p{color:var(--muted);max-width:440px;font-size:0.92rem;}
+
+  /* -------- modal -------- */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(15,40,35,0.45);z-index:400;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity var(--dur) ease;}
+  .modal-backdrop.show{opacity:1;pointer-events:auto;}
+  .modal-card{background:var(--card);border-radius:var(--radius-card);padding:32px;max-width:420px;width:100%;box-shadow:var(--shadow-lg);transform:translateY(12px) scale(0.98);opacity:0;transition:transform var(--dur) ease, opacity var(--dur) ease;}
+  .modal-backdrop.show .modal-card{transform:translateY(0) scale(1);opacity:1;}
+  .modal-card h3{font-size:1.4rem;margin-bottom:12px;}
+  .modal-card p{color:var(--muted);font-size:0.95rem;margin-bottom:26px;line-height:1.6;}
+  .modal-card strong{color:var(--ink);}
+  .modal-actions{display:flex;gap:12px;}
+  .modal-actions .btn{flex:1;}
+  .modal-success{display:none;text-align:center;}
+  .modal-success p{margin-bottom:24px;}
+  .modal-success .icon-circle{width:56px;height:56px;border-radius:50%;background:var(--sage-light);color:var(--forest);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+  .modal-success .icon-circle .icon{width:26px;height:26px;}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:1024px){
+    .container{padding:0 24px;}
+    .section{padding:76px 0;}
+    .product-hero-grid{gap:36px;}
+    .footer-top{grid-template-columns:1fr 1fr;}
+    .footer-brand{grid-column:1/-1;}
+  }
+
+  @media (max-width:900px){
+    .product-hero-grid{grid-template-columns:1fr;}
+    .product-info-col{margin-top:8px;}
+  }
+
+  @media (max-width:860px){
+    .nav-links{display:none;}
+    .hamburger{display:flex;}
+    .icon-btn.desktop-only{display:none;}
+    .nav-sell.desktop-only{display:none;}
+    .mobile-panel{display:block;}
+    .action-buttons{flex-direction:column;}
+  }
+
+  @media (max-width:640px){
+    .container{padding:0 20px;}
+    .section{padding:60px 0;}
+    .section-title{font-size:1.7rem;}
+    .nav-inner{padding:16px 20px;}
+    .thumb{width:68px;height:68px;}
+    .mini-cta{padding:26px 22px;}
+    .mini-cta .btn{width:100%;}
+    .info-strip{flex-direction:column;}
+    .info-strip-item{border-right:none;border-bottom:1px solid var(--line);padding:14px 0;}
+    .info-strip-item:first-child{padding-left:0;}
+    .info-strip-item:last-child{border-bottom:none;}
+    .footer-top{grid-template-columns:1fr;gap:36px;}
+    .footer-bottom{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ ICON SPRITE ============ -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="20.5" y2="20.5"/></symbol>
+  <symbol id="icon-heart" viewBox="0 0 24 24"><path d="M12 20.3c-4.6-2.9-8.7-6.3-8.7-10.6a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.3-4.1 7.7-8.7 10.6z"/></symbol>
+  <symbol id="icon-message" viewBox="0 0 24 24"><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4.2 3.5V16.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/></symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.8 3.3-6 7.5-6s7.5 2.2 7.5 6"/></symbol>
+  <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="icon-arrow-left" viewBox="0 0 24 24"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="10,6 4,12 10,18"/></symbol>
+  <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M11.4 3H4.6A1.6 1.6 0 0 0 3 4.6v6.8c0 .4.2.8.5 1.1l9 9c.6.6 1.6.6 2.2 0l6.8-6.8c.6-.6.6-1.6 0-2.2l-9-9c-.3-.3-.7-.5-1.1-.5z"/><circle cx="7.6" cy="7.6" r="1.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 21.5s6.8-7 6.8-12a6.8 6.8 0 1 0-13.6 0c0 5 6.8 12 6.8 12z"/><circle cx="12" cy="9.4" r="2.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.2 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.2 5.9-.8z"/></symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="4,12.5 9.5,18 20,6"/></symbol>
+
+  <!-- category / product icons -->
+  <symbol id="icon-clothes" viewBox="0 0 32 32"><path d="M16 5.2a2.1 2.1 0 1 0-2.1 2.1"/><path d="M13.9 7.3 4.5 15.5h23L13.9 7.3z"/><line x1="4.5" y1="15.5" x2="27.5" y2="15.5"/></symbol>
+  <symbol id="icon-electronics" viewBox="0 0 32 32"><path d="M6 18.5v-3a10 10 0 0 1 20 0v3"/><rect x="3.5" y="17.5" width="6.5" height="9" rx="3"/><rect x="22" y="17.5" width="6.5" height="9" rx="3"/></symbol>
+  <symbol id="icon-books" viewBox="0 0 32 32"><rect x="5.5" y="6" width="6" height="20" rx="1"/><rect x="13" y="8.5" width="6" height="17.5" rx="1"/><rect x="20.5" y="4.5" width="6" height="21.5" rx="1"/></symbol>
+  <symbol id="icon-furniture" viewBox="0 0 32 32"><path d="M7.5 14.5V9.8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v4.7"/><path d="M7.5 14.5v7.7a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7.7"/><line x1="7.5" y1="19.5" x2="24.5" y2="19.5"/><line x1="6" y1="24.2" x2="6" y2="27.5"/><line x1="26" y1="24.2" x2="26" y2="27.5"/></symbol>
+  <symbol id="icon-accessories" viewBox="0 0 32 32"><circle cx="10" cy="16.5" r="5"/><circle cx="22" cy="16.5" r="5"/><line x1="15" y1="16.5" x2="17" y2="16.5"/><line x1="5" y1="14.5" x2="2" y2="12.5"/><line x1="27" y1="14.5" x2="30" y2="12.5"/></symbol>
+  <symbol id="icon-sports" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10.5"/><path d="M16 5.5v21M5.5 16h21M9 9c3 3 11 3 14 0M9 23c3-3 11-3 14 0"/></symbol>
+  <symbol id="icon-stationery" viewBox="0 0 32 32"><path d="M8.2 23.8 6 28l4.2-2.2L24 12 20 8 6.2 21.8z"/><line x1="18" y1="10" x2="22" y2="14"/></symbol>
+  <symbol id="icon-handmade" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10.5"/><path d="M8.5 12c4 2 6.5 6.5 4.5 11M12.5 6.5c2.2 5.5 8.5 8.5 13 6M9.5 21c4 0 8.5-3.2 9.5-8.5"/></symbol>
+  <symbol id="icon-other" viewBox="0 0 32 32"><path d="M16 5.5 4.5 11v11L16 27.5 27.5 22V11L16 5.5z"/><path d="M4.5 11 16 16.5l11.5-5.5M16 16.5v11"/></symbol>
+  <symbol id="icon-calculator" viewBox="0 0 32 32"><rect x="8" y="4" width="16" height="24" rx="2.4"/><line x1="11" y1="9" x2="21" y2="9"/><rect x="10.5" y="13" width="4" height="3" rx="0.6"/><rect x="17.5" y="13" width="4" height="3" rx="0.6"/><rect x="10.5" y="18" width="4" height="3" rx="0.6"/><rect x="17.5" y="18" width="4" height="3" rx="0.6"/><rect x="10.5" y="23" width="11" height="3" rx="0.6"/></symbol>
+  <symbol id="icon-keyboard" viewBox="0 0 32 32"><rect x="3" y="9" width="26" height="16" rx="2.4"/><rect x="6" y="13" width="3" height="2.4" rx="0.5"/><rect x="11" y="13" width="3" height="2.4" rx="0.5"/><rect x="16" y="13" width="3" height="2.4" rx="0.5"/><rect x="21" y="13" width="3" height="2.4" rx="0.5"/><rect x="6" y="17" width="3" height="2.4" rx="0.5"/><rect x="11" y="17" width="3" height="2.4" rx="0.5"/><rect x="16" y="17" width="3" height="2.4" rx="0.5"/><rect x="21" y="17" width="3" height="2.4" rx="0.5"/><rect x="9" y="21" width="14" height="2.4" rx="0.5"/></symbol>
+  <symbol id="icon-organizer" viewBox="0 0 32 32"><rect x="4" y="10" width="24" height="16" rx="2"/><line x1="13" y1="10" x2="13" y2="26"/><line x1="21" y1="10" x2="21" y2="18"/><line x1="4" y1="18" x2="13" y2="18"/></symbol>
+  <symbol id="icon-speaker" viewBox="0 0 32 32"><rect x="9" y="4" width="14" height="24" rx="3"/><circle cx="16" cy="11" r="3"/><circle cx="16" cy="21" r="4.5"/><circle cx="16" cy="21" r="1.6" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-candle" viewBox="0 0 32 32"><rect x="12" y="12" width="8" height="16" rx="2"/><path d="M16 12c-1.6-2-1.6-4.2 0-6.2 1.6 2 1.6 4.2 0 6.2z"/><line x1="16" y1="9.4" x2="16" y2="6.6"/></symbol>
+</svg>
+
+<!-- ============ TOAST CONTAINER ============ -->
+<div id="toast-container"></div>
+
+<!-- ============ MOBILE PANEL ============ -->
+<div class="mobile-panel" id="mobilePanel">
+  <div class="mobile-panel-top">
+    <a class="logo" href="campus-thrift.html"><svg class="icon"><use href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+    <button class="icon-btn" id="mobileClose" aria-label="Close menu"><svg class="icon"><use href="#icon-close"></use></svg></button>
+  </div>
+  <a href="campus-thrift.html">Home</a>
+  <a href="marketplace.html" class="active">Marketplace</a>
+  <a href="campus-thrift.html#categories">Categories</a>
+  <button class="btn btn-primary btn-block" data-demo="Sell an Item"><svg class="icon" style="width:18px;height:18px"><use href="#icon-plus"></use></svg>Sell an Item</button>
+</div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="logo" href="campus-thrift.html"><svg class="icon"><use href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+    <nav class="nav-links">
+      <a href="campus-thrift.html">Home</a>
+      <a href="marketplace.html" class="active">Marketplace</a>
+      <a href="campus-thrift.html#categories">Categories</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn desktop-only" data-demo="Search" aria-label="Search"><svg class="icon"><use href="#icon-search"></use></svg></button>
+      <button class="icon-btn wishlist desktop-only" data-demo="Wishlist" aria-label="Wishlist"><svg class="icon"><use href="#icon-heart"></use></svg></button>
+      <button class="icon-btn desktop-only" data-demo="Messages" aria-label="Messages"><svg class="icon"><use href="#icon-message"></use></svg></button>
+      <button class="icon-btn desktop-only" data-demo="Profile" aria-label="Profile"><svg class="icon"><use href="#icon-user"></use></svg></button>
+      <button class="btn btn-primary btn-sm nav-sell desktop-only" data-demo="Sell an Item"><svg class="icon" style="width:16px;height:16px"><use href="#icon-plus"></use></svg>Sell an Item</button>
+      <button class="icon-btn hamburger" id="hamburgerBtn" aria-label="Open menu"><svg class="icon"><use href="#icon-menu"></use></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <div class="container">
+    <a class="back-link" href="marketplace.html"><svg class="icon"><use href="#icon-arrow-left"></use></svg>Back to Marketplace</a>
+  </div>
+
+  <!-- ============ PRODUCT HERO ============ -->
+  <section class="product-hero">
+    <div class="container">
+      <div class="product-hero-grid reveal in">
+
+        <!-- LEFT: GALLERY -->
+        <div class="gallery">
+          <div class="main-image-wrap">
+            <div class="main-image bg-a" id="mainImage">
+              <svg class="icon" id="mainImageIcon"><use href="#icon-clothes"></use></svg>
+            </div>
+            <button class="main-wishlist" id="mainWishlist" aria-label="Save item"><svg class="icon"><use href="#icon-heart"></use></svg></button>
+          </div>
+          <div class="thumbnails" id="thumbnails"></div>
+        </div>
+
+        <!-- RIGHT: INFO -->
+        <div class="product-info-col">
+          <span class="condition-badge-static" id="conditionBadge">Like New</span>
+          <h1 class="product-title" id="productTitle">Vintage Denim Jacket</h1>
+          <div class="product-price-lg" id="productPrice">₹850</div>
+          <p class="product-blurb" id="productBlurb">Classic denim jacket in excellent condition.</p>
+
+          <div class="detail-list">
+            <div class="detail-item"><h5>Category</h5><p id="detailCategory">Clothes</p></div>
+            <div class="detail-item"><h5>Condition</h5><p id="detailCondition">Like New</p></div>
+            <div class="detail-item"><h5>Listed</h5><p id="detailListed">2 days ago</p></div>
+            <div class="detail-item"><h5>Location</h5><p id="detailLocation">Main Campus</p></div>
+          </div>
+
+          <div class="seller-card" id="sellerCard">
+            <div class="seller-avatar"><svg class="icon"><use href="#icon-user"></use></svg></div>
+            <div class="seller-meta">
+              <div class="seller-name" id="sellerName">Aisha</div>
+              <div class="seller-sub" id="sellerSub">Student · Main Campus</div>
+              <div class="seller-rating"><svg class="icon"><use href="#icon-star"></use></svg><span id="sellerRating">4.8 · 12 reviews</span></div>
+            </div>
+            <span class="seller-link">View Shop<svg class="icon"><use href="#icon-arrow-left" style="transform:scaleX(-1)"></use></svg></span>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-primary" id="messageSellerBtn">💬 Message Seller</button>
+            <button class="btn btn-secondary" id="requestItemBtn">Request Item</button>
+          </div>
+          <p class="action-hint">Discuss payment, pickup and availability directly with the seller.</p>
+
+          <div class="exchange-block">
+            <h4>Campus exchange</h4>
+            <div class="exchange-row">📍&nbsp;<span><strong>Pickup:</strong> <span id="exchangeLocation">Main Campus</span></span></div>
+            <div class="exchange-row">🤝&nbsp;<span><strong>Meet in person:</strong> Arrange a convenient campus location with the seller.</span></div>
+            <div class="exchange-row">💬&nbsp;<span><strong>Payment:</strong> Discuss payment method directly with the seller.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ ABOUT THIS ITEM ============ -->
+      <div class="about-section reveal in">
+        <h2 class="section-title">About this item</h2>
+        <p class="about-text" id="aboutText">Classic denim jacket in excellent condition.</p>
+
+        <div class="info-strip">
+          <div class="info-strip-item">Category<strong id="infoCategory">Clothes</strong></div>
+          <div class="info-strip-item">Condition<strong id="infoCondition">Like New</strong></div>
+          <div class="info-strip-item">Posted<strong id="infoPosted">August 20, 2026</strong></div>
+          <div class="info-strip-item">Location<strong id="infoLocation">Main Campus</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RELATED PRODUCTS ============ -->
+  <section class="related-section">
+    <div class="container">
+      <div class="section-head reveal in">
+        <span class="eyebrow">Keep browsing</span>
+        <h2 class="section-title">You might also like</h2>
+        <p class="section-sub">More things you might find interesting.</p>
+      </div>
+      <div class="product-grid reveal in" id="relatedGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ MINI SELLER CTA ============ -->
+  <section class="mini-cta-section">
+    <div class="container">
+      <div class="mini-cta reveal in">
+        <div>
+          <h3>Have something to sell?</h3>
+          <p>Turn something you no longer need into something useful for someone on campus.</p>
+        </div>
+        <button class="btn btn-primary" data-demo="Sell an Item"><svg class="icon" style="width:18px;height:18px"><use href="#icon-plus"></use></svg>Sell an Item</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container footer-top">
+    <div class="footer-brand">
+      <a class="logo" href="campus-thrift.html"><svg class="icon"><use href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+      <p>Buy. Sell. Reuse. Together.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Navigate</h5>
+      <ul>
+        <li><a href="campus-thrift.html">Home</a></li>
+        <li><a href="marketplace.html">Marketplace</a></li>
+        <li><a href="campus-thrift.html#categories">Categories</a></li>
+        <li><a href="#" data-demo="Sell an Item">Sell an Item</a></li>
+        <li><a href="#" data-demo="Wishlist">Wishlist</a></li>
+        <li><a href="#" data-demo="Messages">Messages</a></li>
+        <li><a href="#" data-demo="Profile">Profile</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Support</h5>
+      <ul>
+        <li><a href="#" data-demo="How It Works">How It Works</a></li>
+        <li><a href="#" data-demo="Safety Guidelines">Safety Guidelines</a></li>
+        <li><a href="#" data-demo="Community Rules">Community Rules</a></li>
+        <li><a href="#" data-demo="FAQ">FAQ</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 Campus Thrift</span>
+    <span class="footer-tag"><svg class="icon"><use href="#icon-tag"></use></svg>Buy. Sell. Reuse. Together.</span>
+  </div>
+</footer>
+
+<!-- ============ REQUEST ITEM MODAL ============ -->
+<div class="modal-backdrop" id="requestModalBackdrop">
+  <div class="modal-card">
+    <div id="modalRequestView">
+      <h3>Request this item?</h3>
+      <p id="modalRequestText">Send a request to <strong>Aisha</strong> for the <strong>Vintage Denim Jacket</strong>.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="modalCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="modalSendBtn">Send Request</button>
+      </div>
+    </div>
+    <div id="modalSuccessView" class="modal-success">
+      <div class="icon-circle"><svg class="icon"><use href="#icon-check"></use></svg></div>
+      <h3 style="text-align:center;">Request sent</h3>
+      <p id="modalSuccessText">Aisha will get back to you here once they respond. You can follow up any time from Messages.</p>
+      <button class="btn btn-primary btn-block" id="modalDoneBtn">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ============ SHARED PRODUCT DATA (mirrors marketplace.html) ============
+  var PRODUCTS = [
+    {id:1,  name:"Vintage Denim Jacket",                 price:850,  category:"clothes",     condition:"Like New", location:"Hostel",         listingType:"individual", seller:"Aisha",               icon:"icon-clothes",     recentRank:1,  description:"Classic denim jacket in excellent condition. Worn only a few times and still looks almost new. Selling because it doesn't quite fit my style anymore \u2014 perfect for everyday campus wear."},
+    {id:2,  name:"Sony Headphones — WH-CH510",            price:1200, category:"electronics", condition:"Good",     location:"Main Campus",    listingType:"individual", seller:"Rohan",               icon:"icon-electronics", recentRank:5,  description:"Comfortable over-ear headphones with solid bass and battery life. Used for about a semester, works perfectly, just upgrading to a wireless pair."},
+    {id:3,  name:"Engineering Mathematics — B.S. Grewal", price:300,  category:"books",       condition:"Used",     location:"Library",        listingType:"individual", seller:"Priya",               icon:"icon-books",       recentRank:9,  description:"Well-used but complete copy with some highlighting in the early chapters. Got me through first year \u2014 hoping it can do the same for someone else."},
+    {id:4,  name:"Nike Sneakers — Revolution 6",          price:1500, category:"sports",      condition:"Like New", location:"Hostel",         listingType:"individual", seller:"Karthik",             icon:"icon-sports",      recentRank:3,  description:"Worn a handful of times, barely any sign of use. Bought the wrong size and never got around to returning them."},
+    {id:5,  name:"Scientific Calculator — Casio fx-991",  price:600,  category:"stationery",  condition:"Good",     location:"Main Campus",    listingType:"individual", seller:"Aditya",              icon:"icon-calculator",  recentRank:7,  description:"Reliable calculator for engineering and science courses. All functions work fine, a few scuffs on the back panel."},
+    {id:6,  name:"Study Table Lamp",                      price:450,  category:"other",       condition:"Good",     location:"Hostel",         listingType:"individual", seller:"Neha",                icon:"icon-other",       recentRank:11, description:"Simple, warm-light desk lamp that's been great for late-night study sessions. Moving into a room with built-in lighting so don't need it anymore."},
+    {id:7,  name:"Backpack — Wildcraft",                  price:700,  category:"accessories", condition:"Good",     location:"Main Campus",    listingType:"individual", seller:"Vikram",              icon:"icon-accessories", recentRank:13, description:"Sturdy daily backpack with a laptop compartment and good back support. Some wear on the bottom corners but zips and straps are all intact."},
+    {id:8,  name:"Hoodie",                                price:900,  category:"clothes",     condition:"Like New", location:"Hostel",         listingType:"individual", seller:"Meera",               icon:"icon-clothes",     recentRank:2,  description:"Soft, warm hoodie, worn only a couple of times last winter. No stains or pilling, just doesn't get cold enough here to wear it often."},
+    {id:9,  name:"Mechanical Keyboard",                   price:1800, category:"electronics", condition:"Good",     location:"Student Center", listingType:"individual", seller:"Dev",                 icon:"icon-keyboard",    recentRank:4,  description:"Clicky mechanical keyboard, great for typing and light gaming. Switching to a smaller layout, so this one needs a new home."},
+    {id:10, name:"Novel Collection (5 books)",            price:500,  category:"books",       condition:"Good",     location:"Library",        listingType:"individual", seller:"Sanya",               icon:"icon-books",       recentRank:15, description:"A bundle of five paperbacks I've already read and loved. Mix of fiction, all in good shape with no torn pages."},
+    {id:11, name:"Desk Organizer",                        price:250,  category:"other",       condition:"New",      location:"Main Campus",    listingType:"individual", seller:"Farah",               icon:"icon-organizer",   recentRank:6,  description:"Brand new, never used \u2014 got two as gifts by mistake. Has separate compartments for pens, notes and small stationery."},
+    {id:12, name:"Handmade Crochet Bag",                  price:650,  category:"handmade",    condition:"Like New", location:"Student Center", listingType:"business",   seller:"Mia's Crochet Corner",icon:"icon-handmade",    recentRank:8,  description:"Hand-crocheted tote made in a soft cotton yarn. Made to order, so colours can be adjusted on request."},
+    {id:13, name:"Bluetooth Speaker",                     price:950,  category:"electronics", condition:"Good",     location:"Hostel",         listingType:"individual", seller:"Ishaan",              icon:"icon-speaker",     recentRank:16, description:"Compact speaker with decent bass for the size, great for the hostel room. Battery still lasts most of a day on a full charge."},
+    {id:14, name:"Formal Shirt — Slim Fit",                price:450,  category:"clothes",     condition:"Like New", location:"Main Campus",    listingType:"individual", seller:"Priyanka",            icon:"icon-clothes",     recentRank:17, description:"Barely worn slim-fit shirt, great for presentations or interviews. No stains, freshly ironed before listing."},
+    {id:15, name:"Chemistry Lab Manual",                  price:200,  category:"books",       condition:"Used",     location:"Library",        listingType:"individual", seller:"Kabir",               icon:"icon-books",       recentRank:19, description:"Used copy with most of the experiment write-ups already filled in as reference. Covers the full first-year syllabus."},
+    {id:16, name:"Study Chair",                           price:1100, category:"furniture",   condition:"Good",     location:"Hostel",         listingType:"individual", seller:"Tanvi",               icon:"icon-furniture",   recentRank:14, description:"Comfortable study chair with decent back support for long sessions. A little wobbly on one leg but otherwise sturdy."},
+    {id:17, name:"Sunglasses",                            price:550,  category:"accessories", condition:"Like New", location:"Student Center", listingType:"individual", seller:"Zoya",                icon:"icon-accessories", recentRank:10, description:"Classic-fit sunglasses, worn a few times last summer. No scratches on the lenses, comes with a soft pouch."},
+    {id:18, name:"Badminton Racket Set",                  price:700,  category:"sports",      condition:"Good",     location:"Main Campus",    listingType:"individual", seller:"Arjun",               icon:"icon-sports",      recentRank:18, description:"Set of two rackets and a few shuttles, good for casual games on campus. Grips are a bit worn but strings are still tight."},
+    {id:19, name:"Sticky Notes + Highlighter Pack",       price:150,  category:"stationery",  condition:"New",      location:"Library",        listingType:"business",   seller:"The Study Studio",   icon:"icon-stationery",  recentRank:12, description:"Unopened pack of sticky notes and highlighters left over from a stationery haul. Great for exam season."},
+    {id:20, name:"Hand-poured Scented Candle",            price:300,  category:"handmade",    condition:"New",      location:"Hostel",         listingType:"business",   seller:"Simran",              icon:"icon-candle",      recentRank:20, description:"Small-batch soy candle in a warm vanilla-sandalwood scent. Burns cleanly for around 20 hours."}
+  ];
+
+  var CATEGORY_LABELS = {clothes:"Clothes",electronics:"Electronics",books:"Books & Study",furniture:"Furniture",accessories:"Accessories",sports:"Sports",stationery:"Stationery",handmade:"Handmade",other:"Other"};
+
+  var SELLERS = {
+    "Aisha":{rating:4.8,reviews:12}, "Rohan":{rating:4.6,reviews:9}, "Priya":{rating:4.9,reviews:21},
+    "Karthik":{rating:4.7,reviews:15}, "Aditya":{rating:4.5,reviews:7}, "Neha":{rating:4.8,reviews:11},
+    "Vikram":{rating:4.6,reviews:14}, "Meera":{rating:4.9,reviews:18}, "Dev":{rating:4.7,reviews:10},
+    "Sanya":{rating:4.5,reviews:6}, "Farah":{rating:4.8,reviews:9}, "Mia's Crochet Corner":{rating:4.8,reviews:24},
+    "Ishaan":{rating:4.6,reviews:8}, "Priyanka":{rating:4.7,reviews:13}, "Kabir":{rating:4.4,reviews:5},
+    "Tanvi":{rating:4.6,reviews:9}, "Zoya":{rating:4.8,reviews:12}, "Arjun":{rating:4.5,reviews:7},
+    "The Study Studio":{rating:4.9,reviews:36}, "Simran":{rating:4.7,reviews:14}
+  };
+
+  var THUMB_VARIANTS = [
+    {bg:"bg-a", transform:""},
+    {bg:"bg-b", transform:"rotate(-4deg)"},
+    {bg:"bg-c", transform:"scaleX(-1)"},
+    {bg:"bg-d", transform:"rotate(4deg)"}
+  ];
+
+  var TODAY = new Date(2026, 7, 22); // Aug 22, 2026 — matches the site's "current" reference date
+
+  function daysAgoLabel(days){
+    if(days <= 0) return "Today";
+    if(days === 1) return "1 day ago";
+    return days + " days ago";
+  }
+  function absoluteDate(days){
+    var d = new Date(TODAY.getTime());
+    d.setDate(d.getDate() - days);
+    return d.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+  }
+
+  // ============ RESOLVE CURRENT PRODUCT FROM ?id= ============
+  var params = new URLSearchParams(window.location.search);
+  var requestedId = parseInt(params.get('id'), 10);
+  var product = PRODUCTS.find(function(p){ return p.id === requestedId; }) || PRODUCTS[0];
+  var sellerInfo = SELLERS[product.seller] || {rating:4.6, reviews:8};
+
+  // ============ TOAST ============
+  var toastContainer = document.getElementById('toast-container');
+  function showToast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = '<svg class="icon"><use href="#icon-tag"></use></svg><span></span>';
+    t.querySelector('span').textContent = msg;
+    toastContainer.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 320); }, 2400);
+  }
+
+  // ============ NAVBAR / MOBILE MENU ============
+  var nav = document.getElementById('siteNav');
+  window.addEventListener('scroll', function(){
+    nav.style.boxShadow = window.scrollY > 8 ? 'var(--shadow-md)' : 'var(--shadow-sm)';
+  }, {passive:true});
+
+  var hamburger = document.getElementById('hamburgerBtn');
+  var panel = document.getElementById('mobilePanel');
+  var mobileClose = document.getElementById('mobileClose');
+  function openPanel(){ panel.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closePanel(){ panel.classList.remove('open'); document.body.style.overflow=''; }
+  hamburger.addEventListener('click', openPanel);
+  mobileClose.addEventListener('click', closePanel);
+  panel.querySelectorAll('a, button').forEach(function(el){ el.addEventListener('click', closePanel); });
+
+  document.querySelectorAll('[data-demo]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      if(el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href') !== '#'){ return; }
+      e.preventDefault();
+      showToast('Opening ' + el.getAttribute('data-demo') + ' \u2192 coming soon');
+    });
+  });
+  var navWishlist = document.querySelector('.icon-btn.wishlist');
+  if(navWishlist){ navWishlist.addEventListener('click', function(){ navWishlist.classList.toggle('active'); }); }
+
+  // ============ RENDER PRODUCT ============
+  var conditionLabel = product.condition;
+  var categoryLabel = CATEGORY_LABELS[product.category] || product.category;
+
+  document.title = product.name + ' — Campus Thrift';
+  document.getElementById('conditionBadge').textContent = conditionLabel;
+  document.getElementById('productTitle').textContent = product.name;
+  document.getElementById('productPrice').textContent = '\u20B9' + product.price.toLocaleString('en-IN');
+  document.getElementById('productBlurb').textContent = product.description;
+  document.getElementById('detailCategory').textContent = categoryLabel;
+  document.getElementById('detailCondition').textContent = conditionLabel;
+  document.getElementById('detailListed').textContent = daysAgoLabel(product.recentRank);
+  document.getElementById('detailLocation').textContent = product.location;
+
+  document.getElementById('sellerName').textContent = product.seller;
+  document.getElementById('sellerSub').textContent = 'Student \u00B7 ' + product.location;
+  document.getElementById('sellerRating').textContent = sellerInfo.rating.toFixed(1) + ' \u00B7 ' + sellerInfo.reviews + ' reviews';
+
+  document.getElementById('exchangeLocation').textContent = product.location;
+
+  document.getElementById('aboutText').textContent = product.description;
+  document.getElementById('infoCategory').textContent = categoryLabel;
+  document.getElementById('infoCondition').textContent = conditionLabel;
+  document.getElementById('infoPosted').textContent = absoluteDate(product.recentRank);
+  document.getElementById('infoLocation').textContent = product.location;
+
+  document.getElementById('modalRequestText').innerHTML = 'Send a request to <strong>' + product.seller + '</strong> for the <strong>' + product.name + '</strong>.';
+  document.getElementById('modalSuccessText').textContent = product.seller + ' will get back to you here once they respond. You can follow up any time from Messages.';
+
+  // ============ GALLERY ============
+  var mainImage = document.getElementById('mainImage');
+  var mainImageIcon = document.getElementById('mainImageIcon');
+  var thumbWrap = document.getElementById('thumbnails');
+
+  mainImageIcon.innerHTML = '<use href="#' + product.icon + '"></use>';
+
+  THUMB_VARIANTS.forEach(function(variant, i){
+    var btn = document.createElement('button');
+    btn.className = 'thumb' + (i === 0 ? ' active' : '');
+    btn.setAttribute('aria-label', 'View ' + (i + 1));
+    btn.innerHTML = '<span class="thumb-inner ' + variant.bg + '"><svg class="icon" style="transform:' + variant.transform + '"><use href="#' + product.icon + '"></use></svg></span>';
+    btn.addEventListener('click', function(){
+      thumbWrap.querySelectorAll('.thumb').forEach(function(t){ t.classList.remove('active'); });
+      btn.classList.add('active');
+      mainImage.className = 'main-image ' + variant.bg;
+      mainImageIcon.style.opacity = '0';
+      setTimeout(function(){
+        mainImageIcon.style.transform = variant.transform;
+        mainImageIcon.style.opacity = '0.85';
+      }, 160);
+    });
+    thumbWrap.appendChild(btn);
+  });
+
+  // ============ WISHLIST (main image) ============
+  var mainWishlist = document.getElementById('mainWishlist');
+  mainWishlist.addEventListener('click', function(){
+    mainWishlist.classList.toggle('active');
+    mainWishlist.classList.remove('pop'); void mainWishlist.offsetWidth; mainWishlist.classList.add('pop');
+    showToast(mainWishlist.classList.contains('active') ? 'Saved ' + product.name + ' to wishlist' : 'Removed ' + product.name + ' from wishlist');
+  });
+
+  // ============ SELLER CARD ============
+  document.getElementById('sellerCard').addEventListener('click', function(){
+    showToast('Opening Shop \u2192 ' + product.seller + ' \u2192 coming soon');
+  });
+
+  // ============ MESSAGE SELLER ============
+  document.getElementById('messageSellerBtn').addEventListener('click', function(){
+    showToast('Opening Messages \u2192 conversation with ' + product.seller);
+  });
+
+  // ============ REQUEST ITEM MODAL ============
+  var requestBtn = document.getElementById('requestItemBtn');
+  var modalBackdrop = document.getElementById('requestModalBackdrop');
+  var modalRequestView = document.getElementById('modalRequestView');
+  var modalSuccessView = document.getElementById('modalSuccessView');
+
+  function openModal(){
+    modalRequestView.style.display = 'block';
+    modalSuccessView.style.display = 'none';
+    modalBackdrop.classList.add('show');
+  }
+  function closeModal(){ modalBackdrop.classList.remove('show'); }
+
+  requestBtn.addEventListener('click', openModal);
+  document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+  document.getElementById('modalDoneBtn').addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', function(e){ if(e.target === modalBackdrop) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+
+  document.getElementById('modalSendBtn').addEventListener('click', function(){
+    modalRequestView.style.display = 'none';
+    modalSuccessView.style.display = 'block';
+    requestBtn.textContent = 'Request Sent';
+    requestBtn.classList.add('is-sent');
+    requestBtn.disabled = true;
+    showToast('Request sent to ' + product.seller);
+  });
+
+  // ============ RELATED PRODUCTS ============
+  function getRelated(current, all, count){
+    var others = all.filter(function(p){ return p.id !== current.id; });
+    others.sort(function(a, b){
+      var aSame = a.category === current.category ? 0 : 1;
+      var bSame = b.category === current.category ? 0 : 1;
+      if(aSame !== bSame) return aSame - bSame;
+      return a.recentRank - b.recentRank;
+    });
+    return others.slice(0, count);
+  }
+
+  function renderRelatedCard(p){
+    return '<article class="product-card" data-id="' + p.id + '" data-name="' + p.name + '">' +
+      '<div class="product-photo bg-a">' +
+        '<svg class="icon"><use href="#' + p.icon + '"></use></svg>' +
+        '<span class="product-condition">' + p.condition + '</span>' +
+        '<button class="wishlist-btn" aria-label="Save ' + p.name + '" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>' +
+        '<span class="view-item">View item</span>' +
+      '</div>' +
+      '<div class="product-info">' +
+        '<div class="product-name">' + p.name + '</div>' +
+        '<div class="product-price">\u20B9' + p.price.toLocaleString('en-IN') + '</div>' +
+        '<div class="product-meta">' +
+          '<span class="product-seller" data-seller="' + p.seller + '">' + p.seller + '</span>' +
+          '<span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>' + p.location + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
+  var relatedGrid = document.getElementById('relatedGrid');
+  var related = getRelated(product, PRODUCTS, 4);
+  relatedGrid.innerHTML = related.map(renderRelatedCard).join('');
+
+  relatedGrid.addEventListener('click', function(e){
+    var wishlistBtn = e.target.closest('[data-wishlist]');
+    if(wishlistBtn){
+      e.preventDefault(); e.stopPropagation();
+      wishlistBtn.classList.toggle('active');
+      wishlistBtn.classList.remove('pop'); void wishlistBtn.offsetWidth; wishlistBtn.classList.add('pop');
+      var card = wishlistBtn.closest('[data-name]');
+      var name = card ? card.getAttribute('data-name') : 'item';
+      showToast(wishlistBtn.classList.contains('active') ? 'Saved ' + name + ' to wishlist' : 'Removed ' + name + ' from wishlist');
+      return;
+    }
+    var sellerEl = e.target.closest('[data-seller]');
+    if(sellerEl){
+      e.preventDefault(); e.stopPropagation();
+      showToast('Opening Shop \u2192 ' + sellerEl.getAttribute('data-seller') + ' \u2192 coming soon');
+      return;
+    }
+    var card = e.target.closest('[data-id]');
+    if(card){ window.location.href = 'product-details.html?id=' + card.getAttribute('data-id'); }
+  });
+
+  // ============ REVEAL ============
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add('in'); io.unobserve(entry.target); }
+      });
+    }, {threshold:0.1});
+    revealEls.forEach(function(el){ io.observe(el); });
+  }
+})();
+</script>
+
+</body>
+</html>

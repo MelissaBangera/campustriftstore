@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketplace — Campus Thrift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS (shared with homepage) ============ */
+  :root{
+    --forest:#183C35;
+    --forest-dark:#0F2823;
+    --sage:#A8C3B0;
+    --sage-light:#E9EFE6;
+    --cream:#F7F4ED;
+    --card:#FDFBF6;
+    --ink:#202624;
+    --muted:#6F7773;
+    --terracotta:#C86B4A;
+    --terracotta-tint:#F3E1D6;
+    --line:rgba(24,60,53,0.12);
+    --shadow-sm:0 2px 10px rgba(24,60,53,0.06);
+    --shadow-md:0 14px 30px rgba(24,60,53,0.10);
+    --shadow-lg:0 22px 48px rgba(24,60,53,0.16);
+    --radius-card:16px;
+    --radius-btn:9px;
+    --radius-field:12px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --dur:0.25s;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;margin:0;padding:0;}
+  button{font-family:inherit;cursor:pointer;}
+  h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0;color:var(--forest);}
+  p{margin:0;}
+  :focus-visible{outline:2px solid var(--terracotta);outline-offset:3px;border-radius:4px;}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
+  }
+
+  .container{max-width:1240px;margin:0 auto;padding:0 32px;}
+  .icon{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+  .icon-fill{fill:currentColor;stroke:none;}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--terracotta);margin-bottom:14px;
+  }
+  .eyebrow::before{content:"";width:18px;height:1.5px;background:var(--terracotta);display:inline-block;}
+
+  .section{padding:96px 0;}
+  .section-head{max-width:640px;margin-bottom:52px;}
+  .section-title{font-size:clamp(1.9rem,3.2vw,2.6rem);line-height:1.15;margin-bottom:14px;}
+  .section-sub{color:var(--muted);font-size:1.05rem;max-width:520px;}
+
+  /* ============ BUTTONS ============ */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 28px;border-radius:var(--radius-btn);
+    font-weight:600;font-size:0.95rem;border:1.5px solid transparent;
+    transition:transform var(--dur) ease, background var(--dur) ease, opacity var(--dur) ease, box-shadow var(--dur) ease;
+    white-space:nowrap;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--forest);color:var(--cream);}
+  .btn-primary:hover{background:var(--forest-dark);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+  .btn-secondary{background:transparent;color:var(--forest);border-color:var(--forest);}
+  .btn-secondary:hover{background:var(--forest);color:var(--cream);transform:translateY(-2px);}
+  .btn-cream{background:var(--cream);color:var(--forest);}
+  .btn-cream:hover{background:#fff;box-shadow:var(--shadow-md);transform:translateY(-2px);}
+  .btn-sm{padding:10px 18px;font-size:0.85rem;}
+  .btn-block{width:100%;}
+
+  /* ============ NAVBAR ============ */
+  header.nav{
+    position:sticky;top:0;z-index:100;
+    background:rgba(247,244,237,0.92);
+    backdrop-filter:blur(10px);
+    box-shadow:var(--shadow-sm);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 32px;max-width:1240px;margin:0 auto;
+  }
+  .logo{
+    font-family:var(--font-display);font-size:1.35rem;letter-spacing:0.01em;color:var(--forest);
+    display:flex;align-items:center;gap:9px;
+  }
+  .logo .icon{width:24px;height:24px;color:var(--terracotta);}
+  .nav-links{display:flex;align-items:center;gap:36px;}
+  .nav-links a{
+    font-size:0.94rem;font-weight:500;color:var(--ink);position:relative;padding:4px 0;
+    transition:color var(--dur);
+  }
+  .nav-links a::after{
+    content:"";position:absolute;left:0;bottom:-2px;width:0;height:1.5px;background:var(--terracotta);
+    transition:width var(--dur) ease;
+  }
+  .nav-links a:hover{color:var(--terracotta);}
+  .nav-links a:hover::after{width:100%;}
+  .nav-links a.active{color:var(--forest);font-weight:700;}
+  .nav-links a.active::after{width:100%;background:var(--forest);}
+  .nav-actions{display:flex;align-items:center;gap:6px;}
+  .icon-btn{
+    width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+    background:transparent;border:none;color:var(--forest);transition:background var(--dur);position:relative;
+  }
+  .icon-btn:hover{background:rgba(24,60,53,0.08);}
+  .icon-btn .icon{width:20px;height:20px;}
+  .icon-btn.wishlist.active{color:var(--terracotta);}
+  .icon-btn.wishlist.active .icon{fill:var(--terracotta);}
+  .nav-sell{margin-left:10px;}
+  .hamburger{display:none;}
+
+  .mobile-panel{
+    display:none;position:fixed;inset:0;z-index:150;background:var(--cream);
+    padding:24px 32px;transform:translateY(-100%);transition:transform 0.35s ease;
+    overflow-y:auto;
+  }
+  .mobile-panel.open{transform:translateY(0);}
+  .mobile-panel-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;}
+  .mobile-panel a{display:block;font-family:var(--font-display);font-size:1.6rem;color:var(--forest);padding:14px 0;border-bottom:1px solid var(--line);}
+  .mobile-panel a.active{font-weight:700;}
+  .mobile-panel .btn{margin-top:28px;}
+
+  .search-bar{
+    display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--line);
+    border-radius:var(--radius-field);padding:6px 8px 6px 20px;
+    box-shadow:var(--shadow-sm);transition:border-color var(--dur), box-shadow var(--dur);
+  }
+  .search-bar:focus-within{border-color:var(--forest);box-shadow:var(--shadow-md);}
+  .search-bar .icon{color:var(--muted);flex-shrink:0;}
+  .search-bar input{
+    border:none;outline:none;flex:1;font-family:inherit;font-size:0.98rem;background:transparent;color:var(--ink);padding:10px 0;
+  }
+  .search-bar input::placeholder{color:#9aa19c;}
+  .search-bar button{
+    background:var(--forest);color:var(--cream);border:none;border-radius:calc(var(--radius-field) - 3px);
+    padding:11px 20px;font-weight:600;font-size:0.9rem;display:flex;align-items:center;gap:6px;
+    transition:background var(--dur);
+  }
+  .search-bar button:hover{background:var(--forest-dark);}
+
+  /* ============ CATEGORY CARDS/PILLS ============ */
+  .category-icon-wrap .icon{width:26px;height:26px;stroke-width:1.6;}
+
+  /* ============ PRODUCT GRID / CARDS (shared with homepage) ============ */
+  .product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:26px;}
+  .product-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius-card);
+    overflow:hidden;transition:transform var(--dur) ease, box-shadow var(--dur) ease;position:relative;
+  }
+  .product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);}
+  .product-photo{
+    aspect-ratio:1/0.92;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  .product-photo .icon{width:38%;height:38%;color:var(--forest);opacity:0.82;stroke-width:1.3;transition:transform 0.4s ease;}
+  .product-card:hover .product-photo .icon{transform:scale(1.08);}
+  .product-condition{
+    position:absolute;top:14px;left:14px;background:var(--cream);border:1px solid var(--forest);
+    color:var(--forest);font-size:0.66rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;
+    padding:4px 10px 4px 16px;border-radius:0 7px 7px 0;
+  }
+  .product-condition::before{content:"";position:absolute;left:6px;top:50%;transform:translateY(-50%);width:3px;height:3px;border-radius:50%;background:var(--forest);}
+  .badge-highlight{
+    position:absolute;top:46px;left:14px;background:var(--terracotta);color:var(--cream);
+    font-size:0.62rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;
+    padding:4px 10px;border-radius:99px;
+  }
+  .wishlist-btn{
+    position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;
+    background:rgba(253,251,246,0.9);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+    color:var(--forest);opacity:0.85;transition:opacity var(--dur), transform var(--dur), background var(--dur);
+  }
+  .product-card:hover .wishlist-btn{opacity:1;}
+  .wishlist-btn:hover{background:#fff;transform:scale(1.08);}
+  .wishlist-btn .icon{width:17px;height:17px;}
+  .wishlist-btn.active{color:var(--terracotta);}
+  .wishlist-btn.active .icon{fill:var(--terracotta);}
+  .wishlist-btn.pop{animation:pop 0.35s ease;}
+  @keyframes pop{0%{transform:scale(1);}40%{transform:scale(1.3);}100%{transform:scale(1);}}
+
+  .view-item{
+    position:absolute;bottom:14px;left:50%;transform:translate(-50%,10px);
+    background:var(--forest);color:var(--cream);font-size:0.78rem;font-weight:600;
+    padding:9px 18px;border-radius:99px;opacity:0;transition:opacity var(--dur), transform var(--dur);
+    white-space:nowrap;box-shadow:var(--shadow-sm);
+  }
+  .product-card:hover .view-item{opacity:1;transform:translate(-50%,0);}
+
+  .product-info{padding:16px 18px 18px;}
+  .product-name{font-weight:700;font-size:0.98rem;color:var(--ink);margin-bottom:6px;}
+  .product-price{font-family:var(--font-display);font-size:1.2rem;color:var(--forest);margin-bottom:10px;}
+  .product-meta{display:flex;align-items:center;justify-content:space-between;font-size:0.8rem;color:var(--muted);gap:8px;}
+  .product-seller{font-weight:600;color:var(--ink);transition:color var(--dur);}
+  .product-seller:hover{color:var(--terracotta);}
+  .product-loc{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+  .product-loc .icon{width:13px;height:13px;color:var(--terracotta);}
+
+  /* ============ REVEAL / TOAST (shared) ============ */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity 0.5s ease, transform 0.5s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+  #toast-container{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;}
+  .toast{
+    background:var(--forest);color:var(--cream);padding:12px 22px;border-radius:99px;font-size:0.88rem;font-weight:500;
+    box-shadow:var(--shadow-lg);opacity:0;transform:translateY(12px);transition:opacity 0.3s ease, transform 0.3s ease;
+    display:flex;align-items:center;gap:8px;white-space:nowrap;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+  .toast .icon{width:15px;height:15px;color:var(--terracotta);}
+
+  /* ============ FOOTER (shared) ============ */
+  footer{background:var(--forest);color:rgba(247,244,237,0.85);padding:72px 0 0;}
+  .footer-top{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:48px;padding-bottom:52px;border-bottom:1px solid rgba(247,244,237,0.14);}
+  .footer-brand .logo{color:var(--cream);margin-bottom:14px;}
+  .footer-brand .logo .icon{color:var(--terracotta);}
+  .footer-brand p{color:rgba(247,244,237,0.6);font-size:0.92rem;max-width:260px;}
+  .footer-col h5{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(247,244,237,0.5);margin-bottom:18px;font-weight:700;}
+  .footer-col ul{display:flex;flex-direction:column;gap:12px;}
+  .footer-col a{font-size:0.92rem;color:rgba(247,244,237,0.82);transition:color var(--dur);}
+  .footer-col a:hover{color:var(--terracotta);}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding:24px 0;font-size:0.82rem;color:rgba(247,244,237,0.5);flex-wrap:wrap;gap:10px;}
+  .footer-tag{display:flex;align-items:center;gap:6px;}
+  .footer-tag .icon{width:14px;height:14px;color:var(--terracotta);}
+
+  /* ============================================================ */
+  /* ============ MARKETPLACE-SPECIFIC COMPONENTS ================ */
+  /* ============================================================ */
+
+  .page-intro{padding:52px 0 36px;}
+  .page-intro .section-title{margin-bottom:10px;}
+  .page-intro .search-bar{margin-top:26px;max-width:640px;}
+
+  .category-pills-wrap{padding-bottom:28px;}
+  .pills-label{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:14px;}
+  .category-pills{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;margin:-2px -2px 0;}
+  .category-pills::-webkit-scrollbar{height:5px;}
+  .category-pills::-webkit-scrollbar-thumb{background:var(--sage);border-radius:99px;}
+  .pill{
+    display:inline-flex;align-items:center;gap:7px;flex-shrink:0;
+    padding:10px 18px;border-radius:99px;background:var(--sage-light);color:var(--ink);
+    font-size:0.88rem;font-weight:600;border:1px solid transparent;
+    transition:transform var(--dur) ease, background var(--dur) ease, color var(--dur) ease, border-color var(--dur) ease;
+  }
+  .pill .icon{width:16px;height:16px;stroke-width:1.8;}
+  .pill:hover{transform:translateY(-2px);border-color:var(--sage);}
+  .pill.active{background:var(--forest);color:var(--cream);}
+  .pill.active:hover{border-color:transparent;}
+
+  .mobile-filter-bar{display:none;padding-bottom:24px;}
+  .filters-toggle{gap:8px;}
+  .filters-toggle .icon{width:16px;height:16px;}
+
+  .marketplace-layout{display:grid;grid-template-columns:260px 1fr;gap:40px;align-items:start;padding-bottom:20px;}
+
+  /* -------- filter sidebar -------- */
+  .filters-panel{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:26px 24px 10px;position:sticky;top:96px;align-self:start;
+    max-height:calc(100vh - 120px);overflow-y:auto;
+  }
+  .filters-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+  .filters-head h3{font-size:1.1rem;}
+  .filters-close{display:none;}
+  .filter-group{padding:20px 0;border-bottom:1px solid var(--line);}
+  .filter-group:last-of-type{border-bottom:none;}
+  .filter-group h4{font-family:var(--font-body);font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink);margin-bottom:14px;}
+  .filter-check{display:flex;align-items:center;gap:10px;font-size:0.9rem;color:var(--ink);padding:6px 0;cursor:pointer;user-select:none;}
+  .filter-check input{width:16px;height:16px;accent-color:var(--forest);cursor:pointer;flex-shrink:0;}
+  .price-range-inputs{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+  .price-field{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;flex:1;background:#fff;min-width:0;}
+  .price-field span{color:var(--muted);font-size:0.82rem;}
+  .price-field input{border:none;outline:none;width:100%;font-family:inherit;font-size:0.86rem;background:transparent;color:var(--ink);min-width:0;}
+  .price-sep{color:var(--muted);flex-shrink:0;}
+  .price-slider{width:100%;accent-color:var(--forest);}
+  .clear-all{
+    display:block;width:100%;background:transparent;border:none;color:var(--terracotta);
+    font-weight:700;font-size:0.86rem;padding:18px 0 20px;text-align:left;
+  }
+  .clear-all:hover{text-decoration:underline;}
+  .show-results-btn{display:none;margin:4px 0 20px;}
+
+  /* -------- results header -------- */
+  .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;flex-wrap:wrap;gap:14px;}
+  .results-count{font-size:0.95rem;color:var(--muted);}
+  .results-count strong{color:var(--ink);font-weight:700;}
+  .sort-wrap{display:flex;align-items:center;gap:10px;}
+  .sort-label{font-size:0.85rem;color:var(--muted);}
+  .select-wrap{position:relative;display:inline-flex;align-items:center;}
+  .select-wrap select{
+    appearance:none;-webkit-appearance:none;background:#fff;border:1px solid var(--line);
+    border-radius:8px;padding:9px 34px 9px 14px;font-family:inherit;font-size:0.87rem;
+    color:var(--ink);font-weight:600;cursor:pointer;
+  }
+  .select-wrap select:focus-visible{outline:2px solid var(--terracotta);}
+  .select-chevron{position:absolute;right:10px;width:14px;height:14px;color:var(--muted);pointer-events:none;}
+
+  .marketplace-grid{grid-template-columns:repeat(4,1fr);}
+
+  /* -------- empty state -------- */
+  .empty-state{text-align:center;padding:90px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .empty-state h3{font-size:1.5rem;}
+  .empty-state p{color:var(--muted);max-width:340px;}
+  .empty-state .btn{margin-top:10px;}
+
+  .load-more-wrap{display:flex;justify-content:center;margin-top:46px;}
+
+  /* -------- mini sell cta -------- */
+  .mini-cta-section{padding:8px 0 88px;}
+  .mini-cta{
+    background:var(--sage-light);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:36px 40px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  }
+  .mini-cta h3{font-size:1.35rem;margin-bottom:6px;}
+  .mini-cta p{color:var(--muted);max-width:460px;font-size:0.95rem;}
+
+  /* -------- mobile filter sheet -------- */
+  .filter-backdrop{display:none;}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:1180px){
+    .marketplace-layout{grid-template-columns:220px 1fr;gap:28px;}
+    .marketplace-grid{grid-template-columns:repeat(3,1fr);}
+  }
+
+  @media (max-width:1024px){
+    .container{padding:0 24px;}
+    .section{padding:76px 0;}
+    .footer-top{grid-template-columns:1fr 1fr;}
+    .footer-brand{grid-column:1/-1;}
+  }
+
+  @media (max-width:860px){
+    .nav-links{display:none;}
+    .hamburger{display:flex;}
+    .icon-btn.desktop-only{display:none;}
+    .nav-sell.desktop-only{display:none;}
+    .mobile-panel{display:block;}
+
+    .marketplace-layout{grid-template-columns:1fr;}
+    .marketplace-grid{grid-template-columns:repeat(2,1fr);gap:14px;}
+    .mobile-filter-bar{display:block;}
+
+    .filters-panel{
+      display:none;position:fixed;left:0;right:0;bottom:0;top:auto;
+      max-height:85vh;border-radius:20px 20px 0 0;box-shadow:var(--shadow-lg);
+      z-index:220;margin:0;padding:22px 22px calc(22px + env(safe-area-inset-bottom));
+    }
+    .filters-panel.mobile-open{display:block;}
+    .filters-close{display:inline-flex;}
+    .show-results-btn{display:flex;}
+    .filter-backdrop{
+      display:block;position:fixed;inset:0;background:rgba(15,40,35,0.42);z-index:215;
+      opacity:0;pointer-events:none;transition:opacity var(--dur) ease;
+    }
+    .filter-backdrop.show{opacity:1;pointer-events:auto;}
+  }
+
+  @media (max-width:640px){
+    .container{padding:0 20px;}
+    .section{padding:60px 0;}
+    .section-title{font-size:1.7rem;}
+    .nav-inner{padding:16px 20px;}
+    .page-intro{padding:36px 0 28px;}
+    .search-bar{flex-wrap:nowrap;}
+    .search-bar button span{display:none;}
+    .product-info{padding:12px 12px 14px;}
+    .product-name{font-size:0.86rem;}
+    .product-price{font-size:1.02rem;}
+    .product-meta{flex-direction:column;align-items:flex-start;gap:4px;}
+    .results-header{align-items:flex-start;}
+    .mini-cta{padding:28px 24px;}
+    .mini-cta .btn{width:100%;}
+    .footer-top{grid-template-columns:1fr;gap:36px;}
+    .footer-bottom{flex-direction:column;align-items:flex-start;}
+  }
+
+  @media (max-width:420px){
+    .marketplace-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ ICON SPRITE ============ -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="20.5" y2="20.5"/></symbol>
+  <symbol id="icon-heart" viewBox="0 0 24 24"><path d="M12 20.3c-4.6-2.9-8.7-6.3-8.7-10.6a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.3-4.1 7.7-8.7 10.6z"/></symbol>
+  <symbol id="icon-message" viewBox="0 0 24 24"><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4.2 3.5V16.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/></symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.8 3.3-6 7.5-6s7.5 2.2 7.5 6"/></symbol>
+  <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="icon-arrow-right" viewBox="0 0 24 24"><line x1="4" y1="12" x2="18" y2="12"/><polyline points="12,6 18,12 12,18"/></symbol>
+  <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M11.4 3H4.6A1.6 1.6 0 0 0 3 4.6v6.8c0 .4.2.8.5 1.1l9 9c.6.6 1.6.6 2.2 0l6.8-6.8c.6-.6.6-1.6 0-2.2l-9-9c-.3-.3-.7-.5-1.1-.5z"/><circle cx="7.6" cy="7.6" r="1.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 21.5s6.8-7 6.8-12a6.8 6.8 0 1 0-13.6 0c0 5 6.8 12 6.8 12z"/><circle cx="12" cy="9.4" r="2.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="4,12.5 9.5,18 20,6"/></symbol>
+  <symbol id="icon-exchange" viewBox="0 0 24 24"><path d="M3 8h14"/><polyline points="13,4 17,8 13,12"/><path d="M21 16H7"/><polyline points="11,20 7,16 11,12"/></symbol>
+  <symbol id="icon-filter" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2.1"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2.1"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2.1"/></symbol>
+  <symbol id="icon-chevron-down" viewBox="0 0 24 24"><polyline points="6,9 12,15.5 18,9"/></symbol>
+  <symbol id="icon-empty" viewBox="0 0 64 64"><path d="M10 24 32 15l22 9-22 9-22-9z"/><path d="M10 24v21l22 9V33"/><path d="M54 24v21L32 54V33"/></symbol>
+
+  <!-- category icons -->
+  <symbol id="icon-clothes" viewBox="0 0 32 32"><path d="M16 5.2a2.1 2.1 0 1 0-2.1 2.1"/><path d="M13.9 7.3 4.5 15.5h23L13.9 7.3z"/><line x1="4.5" y1="15.5" x2="27.5" y2="15.5"/></symbol>
+  <symbol id="icon-electronics" viewBox="0 0 32 32"><path d="M6 18.5v-3a10 10 0 0 1 20 0v3"/><rect x="3.5" y="17.5" width="6.5" height="9" rx="3"/><rect x="22" y="17.5" width="6.5" height="9" rx="3"/></symbol>
+  <symbol id="icon-books" viewBox="0 0 32 32"><rect x="5.5" y="6" width="6" height="20" rx="1"/><rect x="13" y="8.5" width="6" height="17.5" rx="1"/><rect x="20.5" y="4.5" width="6" height="21.5" rx="1"/></symbol>
+  <symbol id="icon-furniture" viewBox="0 0 32 32"><path d="M7.5 14.5V9.8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v4.7"/><path d="M7.5 14.5v7.7a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7.7"/><line x1="7.5" y1="19.5" x2="24.5" y2="19.5"/><line x1="6" y1="24.2" x2="6" y2="27.5"/><line x1="26" y1="24.2" x2="26" y2="27.5"/></symbol>
+  <symbol id="icon-accessories" viewBox="0 0 32 32"><circle cx="10" cy="16.5" r="5"/><circle cx="22" cy="16.5" r="5"/><line x1="15" y1="16.5" x2="17" y2="16.5"/><line x1="5" y1="14.5" x2="2" y2="12.5"/><line x1="27" y1="14.5" x2="30" y2="12.5"/></symbol>
+  <symbol id="icon-sports" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10.5"/><path d="M16 5.5v21M5.5 16h21M9 9c3 3 11 3 14 0M9 23c3-3 11-3 14 0"/></symbol>
+  <symbol id="icon-stationery" viewBox="0 0 32 32"><path d="M8.2 23.8 6 28l4.2-2.2L24 12 20 8 6.2 21.8z"/><line x1="18" y1="10" x2="22" y2="14"/></symbol>
+  <symbol id="icon-handmade" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10.5"/><path d="M8.5 12c4 2 6.5 6.5 4.5 11M12.5 6.5c2.2 5.5 8.5 8.5 13 6M9.5 21c4 0 8.5-3.2 9.5-8.5"/></symbol>
+  <symbol id="icon-other" viewBox="0 0 32 32"><path d="M16 5.5 4.5 11v11L16 27.5 27.5 22V11L16 5.5z"/><path d="M4.5 11 16 16.5l11.5-5.5M16 16.5v11"/></symbol>
+
+  <!-- product icons -->
+  <symbol id="icon-calculator" viewBox="0 0 32 32"><rect x="8" y="4" width="16" height="24" rx="2.4"/><line x1="11" y1="9" x2="21" y2="9"/><rect x="10.5" y="13" width="4" height="3" rx="0.6"/><rect x="17.5" y="13" width="4" height="3" rx="0.6"/><rect x="10.5" y="18" width="4" height="3" rx="0.6"/><rect x="17.5" y="18" width="4" height="3" rx="0.6"/><rect x="10.5" y="23" width="11" height="3" rx="0.6"/></symbol>
+  <symbol id="icon-keyboard" viewBox="0 0 32 32"><rect x="3" y="9" width="26" height="16" rx="2.4"/><rect x="6" y="13" width="3" height="2.4" rx="0.5"/><rect x="11" y="13" width="3" height="2.4" rx="0.5"/><rect x="16" y="13" width="3" height="2.4" rx="0.5"/><rect x="21" y="13" width="3" height="2.4" rx="0.5"/><rect x="6" y="17" width="3" height="2.4" rx="0.5"/><rect x="11" y="17" width="3" height="2.4" rx="0.5"/><rect x="16" y="17" width="3" height="2.4" rx="0.5"/><rect x="21" y="17" width="3" height="2.4" rx="0.5"/><rect x="9" y="21" width="14" height="2.4" rx="0.5"/></symbol>
+  <symbol id="icon-organizer" viewBox="0 0 32 32"><rect x="4" y="10" width="24" height="16" rx="2"/><line x1="13" y1="10" x2="13" y2="26"/><line x1="21" y1="10" x2="21" y2="18"/><line x1="4" y1="18" x2="13" y2="18"/></symbol>
+  <symbol id="icon-speaker" viewBox="0 0 32 32"><rect x="9" y="4" width="14" height="24" rx="3"/><circle cx="16" cy="11" r="3"/><circle cx="16" cy="21" r="4.5"/><circle cx="16" cy="21" r="1.6" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-candle" viewBox="0 0 32 32"><rect x="12" y="12" width="8" height="16" rx="2"/><path d="M16 12c-1.6-2-1.6-4.2 0-6.2 1.6 2 1.6 4.2 0 6.2z"/><line x1="16" y1="9.4" x2="16" y2="6.6"/></symbol>
+</svg>
+
+<!-- ============ TOAST CONTAINER ============ -->
+<div id="toast-container"></div>
+
+<!-- ============ MOBILE PANEL ============ -->
+<div class="mobile-panel" id="mobilePanel">
+  <div class="mobile-panel-top">
+    <a class="logo" href="campus-thrift.html"><svg class="icon"><use href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+    <button class="icon-btn" id="mobileClose" aria-label="Close menu"><svg class="icon"><use href="#icon-close"></use></svg></button>
+  </div>
+  <a href="campus-thrift.html">Home</a>
+  <a href="#top" class="active">Marketplace</a>
+  <a href="campus-thrift.html#categories">Categories</a>
+  <button class="btn btn-primary btn-block" data-demo="Sell an Item"><svg class="icon" style="width:18px;height:18px"><use href="#icon-plus"></use></svg>Sell an Item</button>
+</div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="logo" href="campus-thrift.html"><svg class="icon"><use href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+    <nav class="nav-links">
+      <a href="campus-thrift.html">Home</a>
+      <a href="#top" class="active">Marketplace</a>
+      <a href="campus-thrift.html#categories">Categories</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn desktop-only" data-demo="Search" aria-label="Search"><svg class="icon"><use href="#icon-search"></use></svg></button>
+      <button class="icon-btn wishlist desktop-only" data-demo="Wishlist" aria-label="Wishlist"><svg class="icon"><use href="#icon-heart"></use></svg></button>
+      <button class="icon-btn desktop-only" data-demo="Messages" aria-label="Messages"><svg class="icon"><use href="#icon-message"></use></svg></button>
+      <button class="icon-btn desktop-only" data-demo="Profile" aria-label="Profile"><svg class="icon"><use href="#icon-user"></use></svg></button>
+      <button class="btn btn-primary btn-sm nav-sell desktop-only" data-demo="Sell an Item"><svg class="icon" style="width:16px;height:16px"><use href="#icon-plus"></use></svg>Sell an Item</button>
+      <button class="icon-btn hamburger" id="hamburgerBtn" aria-label="Open menu"><svg class="icon"><use href="#icon-menu"></use></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ PAGE INTRO ============ -->
+  <section class="page-intro">
+    <div class="container">
+      <span class="eyebrow">Marketplace</span>
+      <h1 class="section-title">Find something you'll love.</h1>
+      <p class="section-sub">Browse pre-loved, useful and unique things from students on your campus.</p>
+
+      <form class="search-bar" id="marketSearch">
+        <svg class="icon"><use href="#icon-search"></use></svg>
+        <input type="text" id="marketSearchInput" placeholder="Search clothes, books, electronics..." aria-label="Search Campus Thrift Marketplace">
+        <button type="submit"><svg class="icon" style="width:16px;height:16px"><use href="#icon-search"></use></svg><span>Search</span></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ CATEGORY PILLS ============ -->
+  <section>
+    <div class="container">
+      <div class="category-pills-wrap reveal in">
+        <div class="pills-label">Browse categories</div>
+        <div class="category-pills" id="categoryPills">
+          <button class="pill active" data-cat="all">All</button>
+          <button class="pill" data-cat="clothes"><svg class="icon"><use href="#icon-clothes"></use></svg>Clothes</button>
+          <button class="pill" data-cat="electronics"><svg class="icon"><use href="#icon-electronics"></use></svg>Electronics</button>
+          <button class="pill" data-cat="books"><svg class="icon"><use href="#icon-books"></use></svg>Books &amp; Study</button>
+          <button class="pill" data-cat="furniture"><svg class="icon"><use href="#icon-furniture"></use></svg>Furniture</button>
+          <button class="pill" data-cat="accessories"><svg class="icon"><use href="#icon-accessories"></use></svg>Accessories</button>
+          <button class="pill" data-cat="sports"><svg class="icon"><use href="#icon-sports"></use></svg>Sports</button>
+          <button class="pill" data-cat="stationery"><svg class="icon"><use href="#icon-stationery"></use></svg>Stationery</button>
+          <button class="pill" data-cat="handmade"><svg class="icon"><use href="#icon-handmade"></use></svg>Handmade</button>
+          <button class="pill" data-cat="other"><svg class="icon"><use href="#icon-other"></use></svg>Other</button>
+        </div>
+      </div>
+
+      <div class="mobile-filter-bar">
+        <button class="btn btn-secondary btn-sm filters-toggle" id="filtersToggle"><svg class="icon"><use href="#icon-filter"></use></svg>Filters</button>
+      </div>
+
+      <!-- ============ LAYOUT: FILTERS + RESULTS ============ -->
+      <div class="marketplace-layout reveal in">
+
+        <aside class="filters-panel" id="filtersPanel">
+          <div class="filters-head">
+            <h3>Filter by</h3>
+            <button class="icon-btn filters-close" id="filtersClose" aria-label="Close filters"><svg class="icon"><use href="#icon-close"></use></svg></button>
+          </div>
+
+          <div class="filter-group">
+            <h4>Category</h4>
+            <label class="filter-check"><input type="checkbox" data-filter="category" value="clothes"><span>Clothes</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="category" value="electronics"><span>Electronics</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="category" value="books"><span>Books &amp; Study</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="category" value="furniture"><span>Furniture</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="category" value="accessories"><span>Accessories</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="category" value="sports"><span>Sports</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="category" value="stationery"><span>Stationery</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="category" value="handmade"><span>Handmade</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="category" value="other"><span>Other</span></label>
+          </div>
+
+          <div class="filter-group">
+            <h4>Price</h4>
+            <div class="price-range-inputs">
+              <div class="price-field"><span>₹</span><input type="number" id="priceMin" min="0" max="5000" step="50" value="0" aria-label="Minimum price"></div>
+              <span class="price-sep">—</span>
+              <div class="price-field"><span>₹</span><input type="number" id="priceMax" min="0" max="5000" step="50" value="5000" aria-label="Maximum price"></div>
+            </div>
+            <input type="range" class="price-slider" id="priceSlider" min="0" max="5000" step="50" value="5000" aria-label="Maximum price slider">
+          </div>
+
+          <div class="filter-group">
+            <h4>Condition</h4>
+            <label class="filter-check"><input type="checkbox" data-filter="condition" value="New"><span>New</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="condition" value="Like New"><span>Like New</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="condition" value="Good"><span>Good</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="condition" value="Used"><span>Used</span></label>
+          </div>
+
+          <div class="filter-group">
+            <h4>Location</h4>
+            <label class="filter-check"><input type="checkbox" data-filter="location" value="Main Campus"><span>Main Campus</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="location" value="Hostel"><span>Hostel</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="location" value="Library"><span>Library</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="location" value="Student Center"><span>Student Center</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="location" value="Other"><span>Other</span></label>
+          </div>
+
+          <div class="filter-group">
+            <h4>Listing Type</h4>
+            <label class="filter-check"><input type="checkbox" data-filter="listing" value="individual"><span>Individual Seller</span></label>
+            <label class="filter-check"><input type="checkbox" data-filter="listing" value="business"><span>Student Business</span></label>
+          </div>
+
+          <button class="btn btn-primary btn-block show-results-btn" id="showResultsBtn">Show <span id="filterResultCount">20</span> results</button>
+          <button class="clear-all" id="clearFilters">Clear All</button>
+        </aside>
+
+        <div class="marketplace-content">
+          <div class="results-header">
+            <span class="results-count" aria-live="polite"><strong id="resultsCount">20</strong> items</span>
+            <div class="sort-wrap">
+              <label for="sortSelect" class="sort-label">Sort by</label>
+              <div class="select-wrap">
+                <select id="sortSelect">
+                  <option value="recent">Recently Added</option>
+                  <option value="price-asc">Price: Low to High</option>
+                  <option value="price-desc">Price: High to Low</option>
+                  <option value="popular">Most Popular</option>
+                </select>
+                <svg class="icon select-chevron"><use href="#icon-chevron-down"></use></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-grid marketplace-grid" id="productGrid"></div>
+
+          <div class="empty-state" id="emptyState" hidden>
+            <svg class="icon" style="width:64px;height:64px;color:var(--sage);stroke-width:1.4"><use href="#icon-empty"></use></svg>
+            <h3>Nothing here yet.</h3>
+            <p>Try another search or remove some filters.</p>
+            <button class="btn btn-secondary" id="emptyClear">Clear Filters</button>
+          </div>
+
+          <div class="load-more-wrap" id="loadMoreWrap">
+            <button class="btn btn-secondary" id="loadMoreBtn">Load More Items</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="filter-backdrop" id="filterBackdrop"></div>
+
+  <!-- ============ MINI SELL CTA ============ -->
+  <section class="mini-cta-section">
+    <div class="container">
+      <div class="mini-cta reveal in">
+        <div>
+          <h3>Not finding what you're looking for?</h3>
+          <p>Maybe someone on campus has exactly what you need. Or maybe you have something they need.</p>
+        </div>
+        <button class="btn btn-primary" data-demo="Sell an Item"><svg class="icon" style="width:18px;height:18px"><use href="#icon-plus"></use></svg>Sell an Item</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container footer-top">
+    <div class="footer-brand">
+      <a class="logo" href="campus-thrift.html"><svg class="icon"><use href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+      <p>Buy. Sell. Reuse. Together.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Navigate</h5>
+      <ul>
+        <li><a href="campus-thrift.html">Home</a></li>
+        <li><a href="#top">Marketplace</a></li>
+        <li><a href="campus-thrift.html#categories">Categories</a></li>
+        <li><a href="#" data-demo="Sell an Item">Sell an Item</a></li>
+        <li><a href="#" data-demo="Wishlist">Wishlist</a></li>
+        <li><a href="#" data-demo="Messages">Messages</a></li>
+        <li><a href="#" data-demo="Profile">Profile</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Support</h5>
+      <ul>
+        <li><a href="#" data-demo="How It Works">How It Works</a></li>
+        <li><a href="#" data-demo="Safety Guidelines">Safety Guidelines</a></li>
+        <li><a href="#" data-demo="Community Rules">Community Rules</a></li>
+        <li><a href="#" data-demo="FAQ">FAQ</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 Campus Thrift</span>
+    <span class="footer-tag"><svg class="icon"><use href="#icon-tag"></use></svg>Buy. Sell. Reuse. Together.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ============ PRODUCT DATA ============
+  var PRODUCTS = [
+    {id:1,  name:"Vintage Denim Jacket",                 price:850,  category:"clothes",     condition:"Like New", location:"Hostel",         listingType:"individual", seller:"Aisha",               icon:"icon-clothes",      bg:"bg-a", badge:null,      popularity:88, recentRank:1,  kw:"denim jacket outerwear"},
+    {id:2,  name:"Sony Headphones — WH-CH510",            price:1200, category:"electronics", condition:"Good",     location:"Main Campus",    listingType:"individual", seller:"Rohan",               icon:"icon-electronics",  bg:"bg-b", badge:"Popular", popularity:96, recentRank:5,  kw:"headphones earphones audio sony"},
+    {id:3,  name:"Engineering Mathematics — B.S. Grewal", price:300,  category:"books",       condition:"Used",     location:"Library",        listingType:"individual", seller:"Priya",               icon:"icon-books",        bg:"bg-c", badge:null,      popularity:70, recentRank:9,  kw:"engineering books textbook maths"},
+    {id:4,  name:"Nike Sneakers — Revolution 6",          price:1500, category:"sports",      condition:"Like New", location:"Hostel",         listingType:"individual", seller:"Karthik",             icon:"icon-sports",       bg:"bg-d", badge:null,      popularity:81, recentRank:3,  kw:"shoes sneakers footwear nike"},
+    {id:5,  name:"Scientific Calculator — Casio fx-991",  price:600,  category:"stationery",  condition:"Good",     location:"Main Campus",    listingType:"individual", seller:"Aditya",              icon:"icon-calculator",   bg:"bg-a", badge:null,      popularity:74, recentRank:7,  kw:"calculator casio scientific"},
+    {id:6,  name:"Study Table Lamp",                      price:450,  category:"other",       condition:"Good",     location:"Hostel",         listingType:"individual", seller:"Neha",                icon:"icon-other",        bg:"bg-b", badge:null,      popularity:60, recentRank:11, kw:"lamp light study"},
+    {id:7,  name:"Backpack — Wildcraft",                  price:700,  category:"accessories", condition:"Good",     location:"Main Campus",    listingType:"individual", seller:"Vikram",              icon:"icon-accessories",  bg:"bg-c", badge:null,      popularity:65, recentRank:13, kw:"backpack bag wildcraft"},
+    {id:8,  name:"Hoodie",                                price:900,  category:"clothes",     condition:"Like New", location:"Hostel",         listingType:"individual", seller:"Meera",               icon:"icon-clothes",      bg:"bg-d", badge:"New",     popularity:78, recentRank:2,  kw:"hoodie sweatshirt winter"},
+    {id:9,  name:"Mechanical Keyboard",                   price:1800, category:"electronics", condition:"Good",     location:"Student Center", listingType:"individual", seller:"Dev",                 icon:"icon-keyboard",     bg:"bg-a", badge:null,      popularity:91, recentRank:4,  kw:"keyboard mechanical typing"},
+    {id:10, name:"Novel Collection (5 books)",            price:500,  category:"books",       condition:"Good",     location:"Library",        listingType:"individual", seller:"Sanya",               icon:"icon-books",        bg:"bg-b", badge:null,      popularity:55, recentRank:15, kw:"novels fiction reading"},
+    {id:11, name:"Desk Organizer",                        price:250,  category:"other",       condition:"New",      location:"Main Campus",    listingType:"individual", seller:"Farah",               icon:"icon-organizer",    bg:"bg-c", badge:"New",     popularity:48, recentRank:6,  kw:"organizer desk storage"},
+    {id:12, name:"Handmade Crochet Bag",                  price:650,  category:"handmade",    condition:"Like New", location:"Student Center", listingType:"business",   seller:"Mia's Crochet Corner",icon:"icon-handmade",     bg:"bg-d", badge:null,      popularity:83, recentRank:8,  kw:"crochet bag handmade"},
+    {id:13, name:"Bluetooth Speaker",                     price:950,  category:"electronics", condition:"Good",     location:"Hostel",         listingType:"individual", seller:"Ishaan",              icon:"icon-speaker",      bg:"bg-a", badge:null,      popularity:69, recentRank:16, kw:"speaker bluetooth audio music"},
+    {id:14, name:"Formal Shirt — Slim Fit",                price:450,  category:"clothes",     condition:"Like New", location:"Main Campus",    listingType:"individual", seller:"Priyanka",            icon:"icon-clothes",      bg:"bg-b", badge:null,      popularity:52, recentRank:17, kw:"shirt formal clothing"},
+    {id:15, name:"Chemistry Lab Manual",                  price:200,  category:"books",       condition:"Used",     location:"Library",        listingType:"individual", seller:"Kabir",               icon:"icon-books",        bg:"bg-c", badge:null,      popularity:40, recentRank:19, kw:"chemistry lab manual books"},
+    {id:16, name:"Study Chair",                           price:1100, category:"furniture",   condition:"Good",     location:"Hostel",         listingType:"individual", seller:"Tanvi",               icon:"icon-furniture",    bg:"bg-d", badge:null,      popularity:58, recentRank:14, kw:"chair furniture study"},
+    {id:17, name:"Sunglasses",                            price:550,  category:"accessories", condition:"Like New", location:"Student Center", listingType:"individual", seller:"Zoya",                icon:"icon-accessories",  bg:"bg-a", badge:null,      popularity:63, recentRank:10, kw:"sunglasses shades accessories"},
+    {id:18, name:"Badminton Racket Set",                  price:700,  category:"sports",      condition:"Good",     location:"Main Campus",    listingType:"individual", seller:"Arjun",               icon:"icon-sports",       bg:"bg-b", badge:null,      popularity:57, recentRank:18, kw:"badminton racket sports"},
+    {id:19, name:"Sticky Notes + Highlighter Pack",       price:150,  category:"stationery",  condition:"New",      location:"Library",        listingType:"business",   seller:"The Study Studio",   icon:"icon-stationery",   bg:"bg-c", badge:"New",     popularity:45, recentRank:12, kw:"stationery sticky notes highlighter"},
+    {id:20, name:"Hand-poured Scented Candle",            price:300,  category:"handmade",    condition:"New",      location:"Hostel",         listingType:"business",   seller:"Simran",              icon:"icon-candle",       bg:"bg-d", badge:"New",     popularity:50, recentRank:20, kw:"candle handmade scented"}
+  ];
+
+  var CATEGORY_LABELS = {clothes:"Clothes",electronics:"Electronics",books:"Books & Study",furniture:"Furniture",accessories:"Accessories",sports:"Sports",stationery:"Stationery",handmade:"Handmade",other:"Other"};
+
+  var state = {
+    query:"", categories:new Set(), conditions:new Set(), locations:new Set(), listingTypes:new Set(),
+    priceMin:0, priceMax:5000, sort:"recent", visibleCount:8
+  };
+
+  // ============ NAVBAR SHADOW ON SCROLL (kept subtle here since bg is already solid) ============
+  var nav = document.getElementById('siteNav');
+  window.addEventListener('scroll', function(){
+    nav.style.boxShadow = window.scrollY > 8 ? 'var(--shadow-md)' : 'var(--shadow-sm)';
+  }, {passive:true});
+
+  // ============ MOBILE MENU ============
+  var hamburger = document.getElementById('hamburgerBtn');
+  var panel = document.getElementById('mobilePanel');
+  var mobileClose = document.getElementById('mobileClose');
+  function openPanel(){ panel.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closePanel(){ panel.classList.remove('open'); document.body.style.overflow=''; }
+  hamburger.addEventListener('click', openPanel);
+  mobileClose.addEventListener('click', closePanel);
+  panel.querySelectorAll('a, button').forEach(function(el){ el.addEventListener('click', closePanel); });
+
+  // ============ TOAST ============
+  var toastContainer = document.getElementById('toast-container');
+  function showToast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = '<svg class="icon"><use href="#icon-tag"></use></svg><span></span>';
+    t.querySelector('span').textContent = msg;
+    toastContainer.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 320); }, 2200);
+  }
+  document.querySelectorAll('[data-demo]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      if(el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href') !== '#'){ return; }
+      e.preventDefault();
+      showToast('Opening ' + el.getAttribute('data-demo') + ' \u2192 coming soon');
+    });
+  });
+  var navWishlist = document.querySelector('.icon-btn.wishlist');
+  if(navWishlist){ navWishlist.addEventListener('click', function(){ navWishlist.classList.toggle('active'); }); }
+
+  // ============ WISHLIST (event delegation on grid) ============
+  function toggleWishlist(btn){
+    btn.classList.toggle('active');
+    btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop');
+    var card = btn.closest('[data-demo]');
+    var name = card ? card.getAttribute('data-demo').replace('Product \u2192 ', '') : 'item';
+    showToast(btn.classList.contains('active') ? 'Saved ' + name + ' to wishlist' : 'Removed ' + name + ' from wishlist');
+  }
+
+  // ============ FILTER + SORT LOGIC ============
+  function clamp(n, min, max){ return Math.min(Math.max(n, min), max); }
+
+  function applyFilters(){
+    var q = state.query.toLowerCase();
+    return PRODUCTS.filter(function(p){
+      if(q){
+        var hay = (p.name + ' ' + (p.kw||'')).toLowerCase();
+        if(hay.indexOf(q) === -1) return false;
+      }
+      if(state.categories.size && !state.categories.has(p.category)) return false;
+      if(state.conditions.size && !state.conditions.has(p.condition)) return false;
+      if(state.locations.size && !state.locations.has(p.location)) return false;
+      if(state.listingTypes.size && !state.listingTypes.has(p.listingType)) return false;
+      if(p.price < state.priceMin || p.price > state.priceMax) return false;
+      return true;
+    });
+  }
+
+  function sortProducts(arr){
+    arr = arr.slice();
+    if(state.sort === 'price-asc') arr.sort(function(a,b){ return a.price - b.price; });
+    else if(state.sort === 'price-desc') arr.sort(function(a,b){ return b.price - a.price; });
+    else if(state.sort === 'popular') arr.sort(function(a,b){ return b.popularity - a.popularity; });
+    else arr.sort(function(a,b){ return a.recentRank - b.recentRank; });
+    return arr;
+  }
+
+  function renderCard(p){
+    var badgeHtml = p.badge ? '<span class="badge-highlight">' + p.badge + '</span>' : '';
+    return '<article class="product-card" data-demo="Product \u2192 ' + p.name + '">' +
+      '<div class="product-photo ' + p.bg + '">' +
+        '<svg class="icon"><use href="#' + p.icon + '"></use></svg>' +
+        '<span class="product-condition">' + p.condition + '</span>' +
+        badgeHtml +
+        '<button class="wishlist-btn" aria-label="Save ' + p.name + '" data-wishlist><svg class="icon"><use href="#icon-heart"></use></svg></button>' +
+        '<span class="view-item">View item</span>' +
+      '</div>' +
+      '<div class="product-info">' +
+        '<div class="product-name">' + p.name + '</div>' +
+        '<div class="product-price">\u20B9' + p.price.toLocaleString('en-IN') + '</div>' +
+        '<div class="product-meta">' +
+          '<span class="product-seller" data-demo="Shop \u2192 ' + p.seller + '" data-seller>' + p.seller + '</span>' +
+          '<span class="product-loc"><svg class="icon"><use href="#icon-pin"></use></svg>' + p.location + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
+  var grid = document.getElementById('productGrid');
+  var emptyState = document.getElementById('emptyState');
+  var loadMoreWrap = document.getElementById('loadMoreWrap');
+  var loadMoreBtn = document.getElementById('loadMoreBtn');
+  var resultsCount = document.getElementById('resultsCount');
+  var filterResultCount = document.getElementById('filterResultCount');
+
+  function render(){
+    var filtered = sortProducts(applyFilters());
+    resultsCount.textContent = filtered.length;
+    filterResultCount.textContent = filtered.length;
+
+    if(filtered.length === 0){
+      grid.style.display = 'none';
+      loadMoreWrap.style.display = 'none';
+      emptyState.hidden = false;
+      return;
+    }
+    emptyState.hidden = true;
+    grid.style.display = 'grid';
+
+    var visible = filtered.slice(0, state.visibleCount);
+    grid.innerHTML = visible.map(renderCard).join('');
+    loadMoreWrap.style.display = (state.visibleCount < filtered.length) ? 'flex' : 'none';
+  }
+
+  grid.addEventListener('click', function(e){
+    var wishlistBtn = e.target.closest('[data-wishlist]');
+    if(wishlistBtn){ e.preventDefault(); e.stopPropagation(); toggleWishlist(wishlistBtn); return; }
+    var sellerEl = e.target.closest('[data-seller]');
+    if(sellerEl){ e.preventDefault(); e.stopPropagation(); showToast('Opening ' + sellerEl.getAttribute('data-demo') + ' \u2192 coming soon'); return; }
+    var card = e.target.closest('[data-demo]');
+    if(card){ showToast('Opening ' + card.getAttribute('data-demo') + ' \u2192 coming soon'); }
+  });
+
+  // ============ CATEGORY PILLS ============
+  var pillsWrap = document.getElementById('categoryPills');
+  function syncPills(){
+    pillsWrap.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+    if(state.categories.size === 0){
+      pillsWrap.querySelector('.pill[data-cat="all"]').classList.add('active');
+    } else if(state.categories.size === 1){
+      var only = Array.from(state.categories)[0];
+      var match = pillsWrap.querySelector('.pill[data-cat="' + only + '"]');
+      if(match) match.classList.add('active');
+    }
+  }
+  pillsWrap.addEventListener('click', function(e){
+    var pill = e.target.closest('.pill'); if(!pill) return;
+    var cat = pill.getAttribute('data-cat');
+    state.categories = (cat === 'all') ? new Set() : new Set([cat]);
+    syncCategoryCheckboxes();
+    syncPills();
+    state.visibleCount = 8;
+    render();
+  });
+
+  // ============ SIDEBAR FILTERS ============
+  var categoryChecks = document.querySelectorAll('[data-filter="category"]');
+  function syncCategoryCheckboxes(){
+    categoryChecks.forEach(function(cb){ cb.checked = state.categories.has(cb.value); });
+  }
+  categoryChecks.forEach(function(cb){
+    cb.addEventListener('change', function(){
+      if(cb.checked) state.categories.add(cb.value); else state.categories.delete(cb.value);
+      syncPills();
+      state.visibleCount = 8;
+      render();
+    });
+  });
+
+  function bindCheckGroup(selector, targetSet){
+    document.querySelectorAll(selector).forEach(function(cb){
+      cb.addEventListener('change', function(){
+        if(cb.checked) targetSet.add(cb.value); else targetSet.delete(cb.value);
+        state.visibleCount = 8;
+        render();
+      });
+    });
+  }
+  bindCheckGroup('[data-filter="condition"]', state.conditions);
+  bindCheckGroup('[data-filter="location"]', state.locations);
+  bindCheckGroup('[data-filter="listing"]', state.listingTypes);
+
+  var priceMinInput = document.getElementById('priceMin');
+  var priceMaxInput = document.getElementById('priceMax');
+  var priceSlider = document.getElementById('priceSlider');
+
+  priceMinInput.addEventListener('change', function(){
+    state.priceMin = clamp(Number(this.value) || 0, 0, 5000);
+    if(state.priceMin > state.priceMax) state.priceMin = state.priceMax;
+    this.value = state.priceMin;
+    state.visibleCount = 8;
+    render();
+  });
+  priceMaxInput.addEventListener('change', function(){
+    state.priceMax = clamp(Number(this.value) || 5000, 0, 5000);
+    if(state.priceMax < state.priceMin) state.priceMax = state.priceMin;
+    this.value = state.priceMax;
+    priceSlider.value = state.priceMax;
+    state.visibleCount = 8;
+    render();
+  });
+  priceSlider.addEventListener('input', function(){
+    state.priceMax = Number(this.value);
+    priceMaxInput.value = state.priceMax;
+    if(state.priceMin > state.priceMax){ state.priceMin = state.priceMax; priceMinInput.value = state.priceMin; }
+    state.visibleCount = 8;
+    render();
+  });
+
+  function clearAllFilters(){
+    state.query = ""; state.categories = new Set(); state.conditions = new Set();
+    state.locations = new Set(); state.listingTypes = new Set();
+    state.priceMin = 0; state.priceMax = 5000; state.sort = "recent"; state.visibleCount = 8;
+    document.querySelectorAll('.filters-panel input[type="checkbox"]').forEach(function(cb){ cb.checked = false; });
+    priceMinInput.value = 0; priceMaxInput.value = 5000; priceSlider.value = 5000;
+    document.getElementById('sortSelect').value = 'recent';
+    document.getElementById('marketSearchInput').value = '';
+    syncPills();
+    render();
+  }
+  document.getElementById('clearFilters').addEventListener('click', clearAllFilters);
+  document.getElementById('emptyClear').addEventListener('click', clearAllFilters);
+
+  // ============ SORT ============
+  document.getElementById('sortSelect').addEventListener('change', function(){
+    state.sort = this.value;
+    state.visibleCount = 8;
+    render();
+  });
+
+  // ============ LOAD MORE ============
+  loadMoreBtn.addEventListener('click', function(){
+    state.visibleCount += 8;
+    render();
+  });
+
+  // ============ SEARCH ============
+  var searchForm = document.getElementById('marketSearch');
+  var searchInput = document.getElementById('marketSearchInput');
+  var searchDebounce;
+  searchInput.addEventListener('input', function(){
+    clearTimeout(searchDebounce);
+    var val = this.value;
+    searchDebounce = setTimeout(function(){ state.query = val.trim(); state.visibleCount = 8; render(); }, 250);
+  });
+  searchForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    state.query = searchInput.value.trim();
+    state.visibleCount = 8;
+    render();
+    if(state.query){ showToast('Showing results for \u201c' + state.query + '\u201d'); }
+  });
+
+  // ============ MOBILE FILTER SHEET ============
+  var filtersPanel = document.getElementById('filtersPanel');
+  var filterBackdrop = document.getElementById('filterBackdrop');
+  var filtersToggle = document.getElementById('filtersToggle');
+  var filtersClose = document.getElementById('filtersClose');
+  var showResultsBtn = document.getElementById('showResultsBtn');
+  function openFilterSheet(){ filtersPanel.classList.add('mobile-open'); filterBackdrop.classList.add('show'); document.body.style.overflow = 'hidden'; }
+  function closeFilterSheet(){ filtersPanel.classList.remove('mobile-open'); filterBackdrop.classList.remove('show'); document.body.style.overflow = ''; }
+  filtersToggle.addEventListener('click', openFilterSheet);
+  filtersClose.addEventListener('click', closeFilterSheet);
+  filterBackdrop.addEventListener('click', closeFilterSheet);
+  showResultsBtn.addEventListener('click', closeFilterSheet);
+
+  // ============ URL DEEP LINK (?category=slug from homepage) ============
+  var params = new URLSearchParams(window.location.search);
+  var initialCat = params.get('category');
+  if(initialCat && CATEGORY_LABELS[initialCat]){
+    state.categories = new Set([initialCat]);
+    syncCategoryCheckboxes();
+  }
+  syncPills();
+
+  // ============ INITIAL RENDER ============
+  render();
+})();
+</script>
+
+</body>
+</html>
