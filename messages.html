@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messages — Campus Thrift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS (shared Campus Thrift identity) ============ */
+  :root{
+    --forest:#183C35;
+    --forest-dark:#0F2823;
+    --sage:#A8C3B0;
+    --sage-light:#E9EFE6;
+    --cream:#F7F4ED;
+    --card:#FDFBF6;
+    --ink:#202624;
+    --muted:#6F7773;
+    --terracotta:#C86B4A;
+    --terracotta-tint:#F3E1D6;
+    --line:rgba(24,60,53,0.12);
+    --shadow-sm:0 2px 10px rgba(24,60,53,0.06);
+    --shadow-md:0 14px 30px rgba(24,60,53,0.10);
+    --shadow-lg:0 22px 48px rgba(24,60,53,0.16);
+    --radius-card:16px;
+    --radius-btn:9px;
+    --radius-field:12px;
+    --font-display:'DM Serif Display','Playfair Display',Georgia,serif;
+    --font-body:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    --dur:0.25s;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--cream);color:var(--ink);
+    font-family:var(--font-body);font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;margin:0;padding:0;}
+  button{font-family:inherit;cursor:pointer;}
+  h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0;color:var(--forest);}
+  p{margin:0;}
+  :focus-visible{outline:2px solid var(--terracotta);outline-offset:3px;border-radius:4px;}
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.001ms !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
+  }
+
+  .container{max-width:1240px;margin:0 auto;padding:0 32px;}
+  .icon{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* ============ BUTTONS ============ */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 28px;border-radius:var(--radius-btn);font-weight:600;font-size:0.95rem;
+    border:1.5px solid transparent;white-space:nowrap;
+    transition:transform var(--dur) ease,background var(--dur) ease,box-shadow var(--dur) ease,color var(--dur) ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--forest);color:var(--cream);}
+  .btn-primary:hover{background:var(--forest-dark);box-shadow:var(--shadow-md);}
+  .btn-secondary{background:transparent;color:var(--forest);border-color:var(--forest);}
+  .btn-secondary:hover{background:var(--forest);color:var(--cream);}
+  .btn-cream{background:var(--cream);color:var(--forest);}
+  .btn-cream:hover{background:#fff;box-shadow:var(--shadow-md);}
+  .btn-sm{padding:10px 18px;font-size:0.85rem;}
+  .btn-xs{padding:7px 14px;font-size:0.8rem;border-radius:8px;}
+  .btn-block{width:100%;}
+
+  /* ============ NAVBAR ============ */
+  header.nav{
+    position:sticky;top:0;z-index:100;
+    background:rgba(247,244,237,0.94);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 32px;max-width:1240px;margin:0 auto;gap:20px;
+  }
+  .logo{
+    font-family:var(--font-display);font-size:1.3rem;color:var(--forest);
+    display:flex;align-items:center;gap:9px;flex-shrink:0;
+  }
+  .logo .icon{width:23px;height:23px;color:var(--terracotta);}
+  .nav-links{display:flex;align-items:center;}
+  .nav-links a{
+    font-size:0.94rem;font-weight:500;color:var(--ink);position:relative;
+    padding:4px 0;margin-right:30px;transition:color var(--dur);
+  }
+  .nav-links a:last-child{margin-right:0;}
+  .nav-links a:hover{color:var(--terracotta);}
+  .nav-actions{display:flex;align-items:center;gap:6px;}
+  .nav-icon-btn{
+    width:38px;height:38px;border-radius:50%;background:transparent;border:none;
+    color:var(--forest);display:flex;align-items:center;justify-content:center;
+    transition:background var(--dur);position:relative;
+  }
+  .nav-icon-btn:hover{background:var(--sage-light);}
+  .nav-icon-btn .icon{width:19px;height:19px;}
+  .nav-icon-btn.is-active{background:var(--forest);color:var(--cream);}
+  .nav-dot{
+    position:absolute;top:7px;right:7px;min-width:15px;height:15px;border-radius:99px;
+    background:var(--terracotta);color:#fff;font-size:0.6rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    border:1.5px solid var(--cream);padding:0 3px;
+  }
+  .nav-sell{margin-left:8px;}
+  .hamburger{
+    display:none;background:transparent;border:none;color:var(--forest);
+    width:40px;height:40px;border-radius:50%;align-items:center;justify-content:center;
+  }
+  .hamburger:hover{background:var(--sage-light);}
+
+  .mobile-panel{
+    display:none;position:fixed;inset:0;z-index:250;background:var(--cream);
+    padding:22px 28px;transform:translateY(-100%);transition:transform 0.35s ease;overflow-y:auto;
+  }
+  .mobile-panel.open{transform:translateY(0);}
+  .mobile-panel-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
+  .mobile-panel-close{
+    background:transparent;border:none;color:var(--forest);width:40px;height:40px;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;
+  }
+  .mobile-panel a.m-link{
+    display:block;font-family:var(--font-display);font-size:1.5rem;color:var(--forest);
+    padding:13px 0;border-bottom:1px solid var(--line);
+  }
+  .mobile-panel a.m-link.is-active{color:var(--terracotta);}
+  .mobile-panel .mobile-actions{margin-top:24px;display:flex;flex-direction:column;gap:11px;}
+
+  /* ============ PAGE HEADER ============ */
+  .page-head{padding:34px 0 22px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:700;
+    letter-spacing:0.13em;text-transform:uppercase;color:var(--terracotta);margin-bottom:9px;
+  }
+  .eyebrow::before{content:"";width:16px;height:1.5px;background:var(--terracotta);}
+  .page-title{font-size:clamp(1.8rem,3vw,2.35rem);line-height:1.15;margin-bottom:7px;}
+  .page-sub{color:var(--muted);font-size:1rem;max-width:520px;}
+
+  /* ============ CHAT SHELL ============ */
+  .chat-shell{
+    display:grid;grid-template-columns:32% 68%;
+    background:var(--card);border:1px solid var(--line);border-radius:22px;
+    box-shadow:var(--shadow-sm);overflow:hidden;
+    height:min(740px,calc(100vh - 210px));min-height:520px;
+  }
+
+  /* ---- Conversation list ---- */
+  .conv-panel{
+    display:flex;flex-direction:column;border-right:1px solid var(--line);
+    background:rgba(233,239,230,0.28);min-width:0;
+  }
+  .conv-head{padding:22px 22px 14px;border-bottom:1px solid var(--line);}
+  .conv-head h2{font-size:1.3rem;margin-bottom:14px;}
+  .search-wrap{position:relative;display:flex;align-items:center;}
+  .search-wrap .icon{position:absolute;left:12px;width:16px;height:16px;color:var(--muted);pointer-events:none;}
+  .search-input{
+    width:100%;border:1.5px solid var(--line);border-radius:99px;
+    padding:10px 14px 10px 36px;font-family:inherit;font-size:0.88rem;
+    color:var(--ink);background:var(--card);transition:border-color var(--dur);
+  }
+  .search-input:focus{outline:none;border-color:var(--forest);}
+
+  .conv-list{flex:1;overflow-y:auto;padding:8px;}
+  .conv-list::-webkit-scrollbar{width:6px;}
+  .conv-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
+
+  .conv-item{
+    width:100%;text-align:left;background:transparent;border:1px solid transparent;
+    border-radius:14px;padding:13px 13px;display:flex;gap:12px;align-items:flex-start;
+    transition:background var(--dur),border-color var(--dur);position:relative;
+  }
+  .conv-item:hover{background:var(--card);border-color:var(--line);}
+  .conv-item.active{background:var(--card);border-color:var(--sage);box-shadow:var(--shadow-sm);}
+  .conv-item.active::before{
+    content:"";position:absolute;left:0;top:16px;bottom:16px;width:3px;
+    background:var(--forest);border-radius:0 3px 3px 0;
+  }
+  .avatar{
+    width:44px;height:44px;border-radius:50%;flex-shrink:0;
+    background:linear-gradient(150deg,var(--sage),var(--sage-light));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-size:1.05rem;color:var(--forest);
+  }
+  .conv-body{flex:1;min-width:0;}
+  .conv-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+  .conv-name{font-size:0.93rem;font-weight:700;color:var(--ink);}
+  .conv-time{font-size:0.72rem;color:var(--muted);white-space:nowrap;flex-shrink:0;}
+  .conv-preview{
+    font-size:0.84rem;color:var(--muted);margin-top:2px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .conv-item.unread .conv-preview{color:var(--ink);font-weight:500;}
+  .conv-product{
+    display:inline-flex;align-items:center;gap:5px;margin-top:7px;
+    font-size:0.74rem;color:var(--forest);background:var(--sage-light);
+    padding:3px 9px;border-radius:99px;max-width:100%;
+  }
+  .conv-product .icon{width:11px;height:11px;flex-shrink:0;}
+  .conv-product span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .unread-pill{
+    min-width:19px;height:19px;border-radius:99px;background:var(--terracotta);color:#fff;
+    font-size:0.68rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+    padding:0 5px;margin-top:4px;flex-shrink:0;
+  }
+
+  .list-empty{display:none;padding:34px 22px;text-align:center;}
+  .list-empty.show{display:block;}
+  .list-empty p{font-size:0.88rem;color:var(--muted);}
+
+  /* ---- Active chat ---- */
+  .chat-panel{display:flex;flex-direction:column;min-width:0;background:var(--card);}
+
+  .chat-head{
+    display:flex;align-items:center;gap:13px;
+    padding:16px 22px;border-bottom:1px solid var(--line);flex-shrink:0;
+  }
+  .back-btn{
+    display:none;background:transparent;border:none;color:var(--forest);
+    width:34px;height:34px;border-radius:50%;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .back-btn:hover{background:var(--sage-light);}
+  .chat-head-text{flex:1;min-width:0;}
+  .chat-head-name{font-size:1rem;font-weight:700;color:var(--ink);}
+  .chat-head-meta{font-size:0.8rem;color:var(--muted);}
+  .chat-status{font-size:0.74rem;color:var(--muted);display:inline-flex;align-items:center;gap:5px;}
+  .chat-status::before{
+    content:"";width:6px;height:6px;border-radius:50%;background:var(--sage);flex-shrink:0;
+  }
+  .chat-head-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;position:relative;}
+  .link-btn{
+    font-size:0.83rem;font-weight:600;color:var(--forest);
+    border-bottom:1.5px solid var(--forest);padding-bottom:1px;white-space:nowrap;
+  }
+  .link-btn:hover{color:var(--terracotta);border-color:var(--terracotta);}
+  .dots-btn{
+    width:34px;height:34px;border-radius:50%;background:transparent;border:none;
+    color:var(--forest);display:flex;align-items:center;justify-content:center;
+    transition:background var(--dur);
+  }
+  .dots-btn:hover{background:var(--sage-light);}
+  .dots-btn .icon{width:18px;height:18px;}
+
+  .chat-menu{
+    position:absolute;top:40px;right:0;z-index:40;min-width:196px;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow-md);padding:6px;display:none;
+  }
+  .chat-menu.open{display:block;}
+  .chat-menu button,.chat-menu a{
+    width:100%;text-align:left;background:transparent;border:none;
+    padding:9px 12px;border-radius:9px;font-size:0.87rem;color:var(--ink);
+    display:flex;align-items:center;gap:9px;transition:background var(--dur);
+  }
+  .chat-menu button:hover,.chat-menu a:hover{background:var(--sage-light);}
+  .chat-menu .icon{width:15px;height:15px;color:var(--muted);flex-shrink:0;}
+  .chat-menu .danger{color:var(--terracotta);}
+  .chat-menu .danger .icon{color:var(--terracotta);}
+  .menu-sep{height:1px;background:var(--line);margin:5px 8px;}
+
+  /* ---- Product context card ---- */
+  .product-context{
+    display:flex;align-items:center;gap:14px;padding:13px 22px;
+    background:rgba(233,239,230,0.45);border-bottom:1px solid var(--line);flex-shrink:0;
+  }
+  .pc-thumb{
+    width:52px;height:52px;border-radius:11px;flex-shrink:0;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(150deg,var(--sage-light),var(--card) 72%);
+  }
+  .pc-thumb .icon{width:26px;height:26px;color:var(--forest);opacity:0.8;stroke-width:1.3;}
+  .pc-body{flex:1;min-width:0;}
+  .pc-title{font-size:0.92rem;font-weight:700;color:var(--ink);}
+  .pc-meta{font-size:0.79rem;color:var(--muted);}
+  .pc-price{font-family:var(--font-display);font-size:1.05rem;color:var(--forest);}
+  .pc-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+  .status-line{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:0.76rem;font-weight:600;white-space:nowrap;
+  }
+  .status-line .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .status-line .icon{width:13px;height:13px;}
+  .st-available{color:var(--forest);}
+  .st-available .sdot{background:var(--sage);}
+  .st-requested{color:var(--terracotta);}
+  .st-requested .sdot{background:var(--terracotta);}
+  .st-reserved{color:#8F4227;}
+  .st-reserved .sdot{background:#C86B4A;box-shadow:0 0 0 3px rgba(200,107,74,0.18);}
+  .st-completed{color:var(--forest);}
+
+  /* ---- Messages ---- */
+  .chat-scroll{flex:1;overflow-y:auto;padding:22px;min-height:0;}
+  .chat-scroll::-webkit-scrollbar{width:6px;}
+  .chat-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
+
+  .day-sep{display:flex;align-items:center;gap:12px;margin:4px 0 20px;}
+  .day-sep::before,.day-sep::after{content:"";flex:1;height:1px;background:var(--line);}
+  .day-sep span{font-size:0.72rem;color:var(--muted);letter-spacing:0.05em;text-transform:uppercase;}
+
+  .msg-group{display:flex;gap:10px;margin-bottom:18px;align-items:flex-end;}
+  .msg-group.mine{flex-direction:row-reverse;}
+  .msg-group .g-avatar{
+    width:30px;height:30px;border-radius:50%;flex-shrink:0;
+    background:linear-gradient(150deg,var(--sage),var(--sage-light));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-size:0.78rem;color:var(--forest);
+  }
+  .msg-group.mine .g-avatar{visibility:hidden;}
+  .bubbles{display:flex;flex-direction:column;gap:4px;max-width:74%;min-width:0;}
+  .msg-group.mine .bubbles{align-items:flex-end;}
+
+  .bubble{
+    padding:11px 15px;font-size:0.92rem;line-height:1.5;
+    border-radius:16px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;
+  }
+  .msg-group.theirs .bubble{
+    background:var(--sage-light);color:var(--ink);
+    border:1px solid rgba(24,60,53,0.07);border-bottom-left-radius:6px;
+  }
+  .msg-group.theirs .bubble:not(:last-of-type){border-bottom-left-radius:16px;}
+  .msg-group.mine .bubble{
+    background:var(--forest);color:var(--cream);border-bottom-right-radius:6px;
+  }
+  .msg-group.mine .bubble:not(:last-of-type){border-bottom-right-radius:16px;}
+  .msg-time{font-size:0.7rem;color:var(--muted);margin-top:3px;}
+
+  .sys-msg{
+    display:flex;justify-content:center;margin:0 0 18px;
+  }
+  .sys-msg span{
+    font-size:0.78rem;color:var(--forest);background:var(--terracotta-tint);
+    border:1px solid rgba(200,107,74,0.28);padding:6px 14px;border-radius:99px;text-align:center;
+  }
+
+  /* ---- Safety notice ---- */
+  .safety-notice{
+    background:var(--sage-light);border:1px solid rgba(24,60,53,0.09);
+    border-radius:14px;padding:14px 16px;margin-bottom:20px;
+    display:flex;gap:11px;align-items:flex-start;
+  }
+  .safety-notice > .icon{width:17px;height:17px;color:var(--forest);flex-shrink:0;margin-top:2px;}
+  .sn-title{font-size:0.82rem;font-weight:700;color:var(--forest);margin-bottom:2px;}
+  .sn-text{font-size:0.82rem;color:var(--muted);}
+  .sn-more{
+    margin-top:7px;font-size:0.78rem;font-weight:600;color:var(--forest);
+    background:none;border:none;padding:0;display:inline-flex;align-items:center;gap:5px;
+  }
+  .sn-more:hover{color:var(--terracotta);}
+  .sn-more .icon{width:12px;height:12px;}
+  .sn-list{display:none;margin:9px 0 0;padding:0;}
+  .sn-list.show{display:block;}
+  .sn-list li{
+    font-size:0.79rem;color:var(--muted);display:flex;gap:7px;align-items:flex-start;margin-top:5px;
+  }
+  .sn-list li .icon{width:12px;height:12px;color:var(--forest);flex-shrink:0;margin-top:4px;}
+
+  /* ---- Composer ---- */
+  .composer{border-top:1px solid var(--line);padding:12px 22px 16px;flex-shrink:0;background:var(--card);}
+  .quick-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:9px;}
+  .quick-row::-webkit-scrollbar{height:4px;}
+  .quick-row::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+  .quick-chip{
+    background:transparent;border:1.5px solid var(--line);border-radius:99px;
+    padding:6px 13px;font-size:0.79rem;color:var(--muted);white-space:nowrap;
+    transition:border-color var(--dur),color var(--dur),background var(--dur);
+  }
+  .quick-chip:hover{border-color:var(--sage);color:var(--forest);background:var(--sage-light);}
+
+  .composer-row{
+    display:flex;align-items:flex-end;gap:8px;
+    border:1.5px solid var(--line);border-radius:18px;padding:7px 8px 7px 12px;
+    background:#fff;transition:border-color var(--dur);
+  }
+  .composer-row:focus-within{border-color:var(--forest);}
+  .msg-input{
+    flex:1;border:none;outline:none;resize:none;background:transparent;
+    font-family:inherit;font-size:0.92rem;line-height:1.5;color:var(--ink);
+    padding:7px 0;max-height:120px;min-height:34px;
+  }
+  .comp-btn{
+    width:34px;height:34px;border-radius:50%;background:transparent;border:none;
+    color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    transition:background var(--dur),color var(--dur);
+  }
+  .comp-btn:hover{background:var(--sage-light);color:var(--forest);}
+  .comp-btn .icon{width:18px;height:18px;}
+  .send-btn{
+    width:38px;height:38px;border-radius:50%;background:var(--forest);border:none;
+    color:var(--cream);display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    transition:background var(--dur),transform var(--dur);
+  }
+  .send-btn:hover{background:var(--forest-dark);}
+  .send-btn:active{transform:scale(0.94);}
+  .send-btn .icon{width:18px;height:18px;}
+
+  .emoji-pop{
+    position:absolute;bottom:56px;right:14px;z-index:40;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow-md);padding:9px;display:none;
+    grid-template-columns:repeat(6,1fr);gap:3px;width:214px;
+  }
+  .emoji-pop.open{display:grid;}
+  .emoji-pop button{
+    background:transparent;border:none;font-size:1.15rem;line-height:1;
+    padding:6px;border-radius:8px;transition:background var(--dur);
+  }
+  .emoji-pop button:hover{background:var(--sage-light);}
+  .composer{position:relative;}
+
+  /* ---- No conversations (page-level empty state) ---- */
+  .page-empty{
+    display:none;background:var(--card);border:1px dashed var(--sage);border-radius:22px;
+    padding:76px 28px;text-align:center;
+  }
+  .page-empty.show{display:block;}
+  .empty-art{
+    width:96px;height:96px;border-radius:50%;margin:0 auto 22px;
+    background:var(--sage-light);display:flex;align-items:center;justify-content:center;color:var(--forest);
+  }
+  .empty-art .icon{width:42px;height:42px;stroke-width:1.3;}
+  .page-empty h2{font-size:1.5rem;margin-bottom:9px;}
+  .page-empty p{color:var(--muted);font-size:0.98rem;max-width:420px;margin:0 auto 24px;}
+
+  /* ============ MODAL ============ */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(15,40,35,0.6);backdrop-filter:blur(4px);
+    display:none;align-items:center;justify-content:center;z-index:500;padding:24px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--card);border-radius:var(--radius-card);box-shadow:var(--shadow-lg);
+    width:100%;max-width:420px;padding:34px 32px 28px;position:relative;
+    max-height:92vh;overflow-y:auto;
+  }
+  .modal-close{
+    position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;
+    background:transparent;border:none;color:var(--muted);
+    display:flex;align-items:center;justify-content:center;transition:background var(--dur);
+  }
+  .modal-close:hover{background:var(--sage-light);color:var(--forest);}
+  .modal-close .icon{width:18px;height:18px;}
+  .modal-box h3{font-size:1.4rem;margin-bottom:18px;}
+  .modal-product{
+    display:flex;gap:13px;align-items:center;background:var(--sage-light);
+    border-radius:var(--radius-field);padding:14px;margin-bottom:16px;
+  }
+  .modal-product .pc-thumb{background:var(--card);}
+  .modal-note{font-size:0.9rem;color:var(--muted);margin-bottom:22px;}
+  .modal-actions{display:flex;gap:10px;}
+  .modal-actions .btn{flex:1;}
+
+  /* ============ FOOTER ============ */
+  footer{background:var(--forest);color:rgba(247,244,237,0.85);padding:60px 0 0;margin-top:56px;}
+  .footer-top{
+    display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;
+    padding-bottom:44px;border-bottom:1px solid rgba(247,244,237,0.14);
+  }
+  .footer-brand .logo{color:var(--cream);margin-bottom:13px;}
+  .footer-brand p{color:rgba(247,244,237,0.6);font-size:0.9rem;max-width:260px;}
+  .footer-col h5{
+    font-size:0.78rem;text-transform:uppercase;letter-spacing:0.1em;
+    color:rgba(247,244,237,0.5);margin:0 0 16px;font-weight:700;
+  }
+  .footer-col ul{display:flex;flex-direction:column;gap:11px;}
+  .footer-col a{font-size:0.91rem;color:rgba(247,244,237,0.82);transition:color var(--dur);}
+  .footer-col a:hover{color:var(--terracotta);}
+  .footer-bottom{
+    display:flex;justify-content:space-between;align-items:center;padding:22px 0;
+    font-size:0.82rem;color:rgba(247,244,237,0.5);flex-wrap:wrap;gap:10px;
+  }
+
+  /* ============ TOAST ============ */
+  #toast-container{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:600;
+    display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;
+  }
+  .toast{
+    background:var(--forest);color:var(--cream);padding:12px 22px;border-radius:99px;
+    font-size:0.88rem;font-weight:500;box-shadow:var(--shadow-lg);
+    opacity:0;transform:translateY(12px);transition:opacity 0.3s ease,transform 0.3s ease;
+    display:flex;align-items:center;gap:8px;max-width:88vw;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+  .toast .icon{width:15px;height:15px;color:var(--sage);flex-shrink:0;}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:1040px){
+    .chat-shell{grid-template-columns:38% 62%;}
+  }
+  @media (max-width:980px){
+    .nav-links{display:none;}
+    .nav-actions .nav-desktop{display:none;}
+    .hamburger{display:flex;}
+    .mobile-panel{display:block;}
+    .footer-top{grid-template-columns:1fr 1fr;}
+    .footer-brand{grid-column:1/-1;}
+  }
+  @media (max-width:860px){
+    .container{padding:0 18px;}
+    .page-head{padding:26px 0 18px;}
+
+    /* One panel at a time on mobile */
+    .chat-shell{
+      grid-template-columns:1fr;
+      height:calc(100vh - 168px);min-height:0;
+    }
+    .conv-panel{border-right:none;}
+    .chat-panel{display:none;}
+    .chat-shell.show-chat .conv-panel{display:none;}
+    .chat-shell.show-chat .chat-panel{display:flex;}
+    .back-btn{display:flex;}
+
+    .chat-head{padding:13px 16px;}
+    .chat-head-actions .link-btn{display:none;}
+    .product-context{padding:11px 16px;gap:11px;}
+    .pc-price{font-size:0.96rem;}
+    .chat-scroll{padding:16px;}
+    .composer{padding:10px 16px 13px;}
+    .bubbles{max-width:82%;}
+    footer{margin-top:40px;}
+  }
+  @media (max-width:640px){
+    .page-title{font-size:1.6rem;}
+    .modal-box{padding:28px 22px 22px;}
+    .pc-actions{flex-direction:column;align-items:flex-end;gap:5px;}
+    .footer-top{grid-template-columns:1fr;gap:30px;}
+    .footer-bottom{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ ICON SPRITE ============ -->
+<svg style="display:none" aria-hidden="true" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M11.4 3H4.6A1.6 1.6 0 0 0 3 4.6v6.8c0 .4.2.8.5 1.1l9 9c.6.6 1.6.6 2.2 0l6.8-6.8c.6-.6.6-1.6 0-2.2l-9-9c-.3-.3-.7-.5-1.1-.5z"/><circle cx="7.6" cy="7.6" r="1.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="20.5" y2="20.5"/></symbol>
+  <symbol id="icon-heart" viewBox="0 0 24 24"><path d="M12 20.3c-4.6-2.9-8.7-6.3-8.7-10.6a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.3-4.1 7.7-8.7 10.6z"/></symbol>
+  <symbol id="icon-message" viewBox="0 0 24 24"><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4.2 3.5V16.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/></symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.8 3.3-6 7.5-6s7.5 2.2 7.5 6"/></symbol>
+  <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="icon-arrow-left" viewBox="0 0 24 24"><line x1="20" y1="12" x2="5" y2="12"/><polyline points="11,6 5,12 11,18"/></symbol>
+  <symbol id="icon-chevron-down" viewBox="0 0 24 24"><polyline points="6,9.5 12,15.5 18,9.5"/></symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="4,12.5 9.5,18 20,6"/></symbol>
+  <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3.5 5 6v6c0 5 3 8 7 9 4-1 7-4 7-9V6l-7-2.5z"/><polyline points="8.7,12.2 11,14.5 15.5,10"/></symbol>
+  <symbol id="icon-send" viewBox="0 0 24 24"><path d="M4.5 12 20 4.5l-4 15.5-5-5.5-6.5-2.5z"/><path d="M11 14.5 20 4.5"/></symbol>
+  <symbol id="icon-clip" viewBox="0 0 24 24"><path d="M16.5 8 9 15.5a3 3 0 0 0 4.2 4.2l7-7a5.2 5.2 0 0 0-7.4-7.4l-7 7a7.4 7.4 0 0 0 10.4 10.4l4-4"/></symbol>
+  <symbol id="icon-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 14c.9 1.4 2.1 2.1 3.5 2.1s2.6-.7 3.5-2.1"/><line x1="9.3" y1="9.5" x2="9.31" y2="9.5"/><line x1="14.7" y1="9.5" x2="14.71" y2="9.5"/></symbol>
+  <symbol id="icon-dots" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="18.5" r="1.6" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-bell-off" viewBox="0 0 24 24"><path d="M9 19a3 3 0 0 0 6 0"/><path d="M6 15V10a6 6 0 0 1 8.5-5.5"/><path d="M18 11v4l1.5 2.5H7"/><line x1="4" y1="4" x2="20" y2="20"/></symbol>
+  <symbol id="icon-flag" viewBox="0 0 24 24"><path d="M6 3.5v17"/><path d="M6 4.5h11l-3 4 3 4H6z"/></symbol>
+  <symbol id="icon-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><line x1="6.5" y1="17.5" x2="17.5" y2="6.5"/></symbol>
+  <symbol id="icon-box" viewBox="0 0 24 24"><path d="M12 3.2 3.5 7.6v8.8L12 20.8l8.5-4.4V7.6L12 3.2z"/><path d="M3.5 7.6 12 12l8.5-4.4M12 12v8.8"/></symbol>
+  <symbol id="icon-clothes" viewBox="0 0 32 32"><path d="M16 5.2a2.1 2.1 0 1 0-2.1 2.1"/><path d="M13.9 7.3 4.5 15.5h23L13.9 7.3z"/><line x1="4.5" y1="15.5" x2="27.5" y2="15.5"/></symbol>
+  <symbol id="icon-calculator" viewBox="0 0 32 32"><rect x="7" y="3.5" width="18" height="25" rx="2.5"/><rect x="10.5" y="7" width="11" height="4.5" rx="1"/><circle cx="12" cy="16.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="16.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="20" cy="16.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="21" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="21" r="1.2" fill="currentColor" stroke="none"/><circle cx="20" cy="21" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-backpack" viewBox="0 0 32 32"><path d="M8 13.5a8 8 0 0 1 16 0v13a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-13z"/><path d="M12.5 13V9.5a3.5 3.5 0 0 1 7 0V13"/><rect x="12.5" y="18" width="7" height="5" rx="1.4"/></symbol>
+  <symbol id="icon-books" viewBox="0 0 32 32"><rect x="5.5" y="6" width="6" height="20" rx="1"/><rect x="13" y="8.5" width="6" height="17.5" rx="1"/><rect x="20.5" y="4.5" width="6" height="21.5" rx="1"/></symbol>
+</svg>
+
+<div id="toast-container"></div>
+
+<!-- ============ MOBILE PANEL ============ -->
+<div class="mobile-panel" id="mobilePanel">
+  <div class="mobile-panel-top">
+    <a class="logo" href="index.html"><svg class="icon"><use href="#icon-tag" xlink:href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+    <button class="mobile-panel-close" id="mobileClose" aria-label="Close menu"><svg class="icon"><use href="#icon-close" xlink:href="#icon-close"></use></svg></button>
+  </div>
+  <a class="m-link" href="index.html">Home</a>
+  <a class="m-link" href="marketplace.html">Marketplace</a>
+  <a class="m-link" href="marketplace.html#categories">Categories</a>
+  <a class="m-link" href="wishlist.html">Wishlist</a>
+  <a class="m-link is-active" href="messages.html">Messages</a>
+  <a class="m-link" href="profile.html">Profile</a>
+  <div class="mobile-actions">
+    <a class="btn btn-primary btn-block" href="sell-item.html"><svg class="icon" style="width:16px;height:16px"><use href="#icon-plus" xlink:href="#icon-plus"></use></svg>Sell an Item</a>
+  </div>
+</div>
+
+<!-- ============ NAVBAR ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="index.html"><svg class="icon"><use href="#icon-tag" xlink:href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="marketplace.html">Marketplace</a>
+      <a href="marketplace.html#categories">Categories</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="nav-icon-btn nav-desktop" aria-label="Search" data-soon="Search"><svg class="icon"><use href="#icon-search" xlink:href="#icon-search"></use></svg></button>
+      <a class="nav-icon-btn nav-desktop" href="wishlist.html" aria-label="Wishlist"><svg class="icon"><use href="#icon-heart" xlink:href="#icon-heart"></use></svg></a>
+      <a class="nav-icon-btn nav-desktop is-active" href="messages.html" aria-label="Messages" aria-current="page">
+        <svg class="icon"><use href="#icon-message" xlink:href="#icon-message"></use></svg>
+        <span class="nav-dot" id="navUnread">3</span>
+      </a>
+      <a class="nav-icon-btn nav-desktop" href="profile.html" aria-label="Profile"><svg class="icon"><use href="#icon-user" xlink:href="#icon-user"></use></svg></a>
+      <a class="btn btn-primary btn-sm nav-sell nav-desktop" href="sell-item.html"><svg class="icon" style="width:15px;height:15px"><use href="#icon-plus" xlink:href="#icon-plus"></use></svg>Sell an Item</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><svg class="icon"><use href="#icon-menu" xlink:href="#icon-menu"></use></svg></button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ PAGE HEADER ============ -->
+  <div class="container page-head">
+    <span class="eyebrow">Messages</span>
+    <h1 class="page-title">Your conversations</h1>
+    <p class="page-sub">Chat with students about listings, availability and campus exchanges.</p>
+  </div>
+
+  <!-- ============ CHAT SHELL ============ -->
+  <div class="container">
+
+    <div class="chat-shell" id="chatShell">
+
+      <!-- ---- Conversation list ---- -->
+      <aside class="conv-panel">
+        <div class="conv-head">
+          <h2>Messages</h2>
+          <div class="search-wrap">
+            <svg class="icon"><use href="#icon-search" xlink:href="#icon-search"></use></svg>
+            <input class="search-input" id="convSearch" type="search" placeholder="Search conversations..." aria-label="Search conversations">
+          </div>
+        </div>
+        <div class="conv-list" id="convList" role="tablist" aria-label="Conversations"></div>
+        <div class="list-empty" id="listEmpty">
+          <p>No conversations match that search.</p>
+        </div>
+      </aside>
+
+      <!-- ---- Active chat ---- -->
+      <section class="chat-panel" id="chatPanel">
+
+        <div class="chat-head">
+          <button class="back-btn" id="backBtn" aria-label="Back to conversations">
+            <svg class="icon"><use href="#icon-arrow-left" xlink:href="#icon-arrow-left"></use></svg>
+          </button>
+          <div class="avatar" id="chatAvatar" style="width:38px;height:38px;font-size:0.9rem;">AS</div>
+          <div class="chat-head-text">
+            <div class="chat-head-name" id="chatName">Aisha Sharma</div>
+            <div class="chat-head-meta" id="chatMeta">Student · Main Campus</div>
+          </div>
+          <div class="chat-head-actions">
+            <span class="chat-status" id="chatStatus">Active recently</span>
+            <a class="link-btn" href="profile.html">View Profile</a>
+            <button class="dots-btn" id="dotsBtn" aria-label="Conversation options" aria-expanded="false">
+              <svg class="icon"><use href="#icon-dots" xlink:href="#icon-dots"></use></svg>
+            </button>
+
+            <div class="chat-menu" id="chatMenu" role="menu">
+              <a href="product-details.html" role="menuitem">
+                <svg class="icon"><use href="#icon-box" xlink:href="#icon-box"></use></svg>View Product
+              </a>
+              <a href="profile.html" role="menuitem">
+                <svg class="icon"><use href="#icon-user" xlink:href="#icon-user"></use></svg>View Seller
+              </a>
+              <button type="button" role="menuitem" data-menu="mute">
+                <svg class="icon"><use href="#icon-bell-off" xlink:href="#icon-bell-off"></use></svg>Mute Conversation
+              </button>
+              <div class="menu-sep"></div>
+              <button type="button" role="menuitem" class="danger" data-menu="report">
+                <svg class="icon"><use href="#icon-flag" xlink:href="#icon-flag"></use></svg>Report Conversation
+              </button>
+              <button type="button" role="menuitem" class="danger" data-menu="block">
+                <svg class="icon"><use href="#icon-ban" xlink:href="#icon-ban"></use></svg>Block User
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---- Product context ---- -->
+        <div class="product-context">
+          <div class="pc-thumb" id="pcThumb">
+            <svg class="icon"><use href="#icon-clothes" xlink:href="#icon-clothes"></use></svg>
+          </div>
+          <div class="pc-body">
+            <div class="pc-title" id="pcTitle">Vintage Denim Jacket</div>
+            <div class="pc-meta" id="pcMeta">Like New · Main Campus</div>
+            <div class="status-line st-available" id="pcStatus">
+              <span class="sdot"></span><span class="stext">Available</span>
+            </div>
+          </div>
+          <div class="pc-actions">
+            <span class="pc-price" id="pcPrice">₹850</span>
+            <a class="btn btn-secondary btn-xs" id="pcView" href="product-details.html">View Item</a>
+            <button class="btn btn-primary btn-xs" id="requestBtn">Request Item</button>
+          </div>
+        </div>
+
+        <!-- ---- Messages ---- -->
+        <div class="chat-scroll" id="chatScroll">
+          <div class="safety-notice">
+            <svg class="icon"><use href="#icon-shield" xlink:href="#icon-shield"></use></svg>
+            <div>
+              <div class="sn-title">Campus Exchange</div>
+              <p class="sn-text">For your safety, arrange exchanges in public campus locations and avoid sharing private addresses.</p>
+              <button class="sn-more" id="snMore" aria-expanded="false">
+                Safety tips <svg class="icon"><use href="#icon-chevron-down" xlink:href="#icon-chevron-down"></use></svg>
+              </button>
+              <ul class="sn-list" id="snList">
+                <li><svg class="icon"><use href="#icon-check" xlink:href="#icon-check"></use></svg>Meet in public campus locations.</li>
+                <li><svg class="icon"><use href="#icon-check" xlink:href="#icon-check"></use></svg>Don't share private addresses.</li>
+                <li><svg class="icon"><use href="#icon-check" xlink:href="#icon-check"></use></svg>Inspect the item before exchanging payment.</li>
+                <li><svg class="icon"><use href="#icon-check" xlink:href="#icon-check"></use></svg>Report suspicious users or listings.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div id="msgThread"></div>
+        </div>
+
+        <!-- ---- Composer ---- -->
+        <div class="composer">
+          <div class="quick-row" id="quickRow">
+            <button class="quick-chip" type="button">Is this still available?</button>
+            <button class="quick-chip" type="button">Can you negotiate the price?</button>
+            <button class="quick-chip" type="button">Where can we meet?</button>
+            <button class="quick-chip" type="button">When are you available?</button>
+          </div>
+
+          <div class="composer-row">
+            <textarea class="msg-input" id="msgInput" rows="1" placeholder="Write a message..." aria-label="Write a message"></textarea>
+            <button class="comp-btn" id="emojiBtn" type="button" aria-label="Add emoji" aria-expanded="false">
+              <svg class="icon"><use href="#icon-smile" xlink:href="#icon-smile"></use></svg>
+            </button>
+            <button class="comp-btn" id="attachBtn" type="button" aria-label="Attach a photo">
+              <svg class="icon"><use href="#icon-clip" xlink:href="#icon-clip"></use></svg>
+            </button>
+            <button class="send-btn" id="sendBtn" type="button" aria-label="Send message">
+              <svg class="icon"><use href="#icon-send" xlink:href="#icon-send"></use></svg>
+            </button>
+          </div>
+
+          <div class="emoji-pop" id="emojiPop"></div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- ============ PAGE EMPTY STATE ============ -->
+    <div class="page-empty" id="pageEmpty">
+      <div class="empty-art"><svg class="icon"><use href="#icon-message" xlink:href="#icon-message"></use></svg></div>
+      <h2>No conversations yet</h2>
+      <p>When you message a seller or someone contacts you about a listing, your conversations will appear here.</p>
+      <a class="btn btn-secondary" href="marketplace.html">Browse Marketplace</a>
+    </div>
+
+  </div>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container footer-top">
+    <div class="footer-brand">
+      <a class="logo" href="index.html"><svg class="icon"><use href="#icon-tag" xlink:href="#icon-tag"></use></svg>CAMPUS THRIFT</a>
+      <p>A student-powered marketplace for buying, selling and exchanging within your campus community.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Explore</h5>
+      <ul>
+        <li><a href="marketplace.html">Marketplace</a></li>
+        <li><a href="marketplace.html#categories">Categories</a></li>
+        <li><a href="sell-item.html">Sell an Item</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Community</h5>
+      <ul>
+        <li><a href="index.html#how-it-works">How It Works</a></li>
+        <li><a href="safety.html">Safety</a></li>
+        <li><a href="guidelines.html">Community Guidelines</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Account</h5>
+      <ul>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="wishlist.html">Wishlist</a></li>
+        <li><a href="messages.html">Messages</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 Campus Thrift. Built for campus communities.</span>
+    <span>Buy. Sell. Reuse. Together.</span>
+  </div>
+</footer>
+
+<!-- ============ REQUEST ITEM MODAL ============ -->
+<div class="modal-overlay" id="reqModal">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="reqTitle">
+    <button class="modal-close" data-close-req aria-label="Close"><svg class="icon"><use href="#icon-close" xlink:href="#icon-close"></use></svg></button>
+
+    <h3 id="reqTitle">Request this item?</h3>
+
+    <div class="modal-product">
+      <div class="pc-thumb" id="reqThumb">
+        <svg class="icon"><use href="#icon-clothes" xlink:href="#icon-clothes"></use></svg>
+      </div>
+      <div class="pc-body">
+        <div class="pc-title" id="reqName">Vintage Denim Jacket</div>
+        <div class="pc-price" id="reqPrice">₹850</div>
+      </div>
+    </div>
+
+    <p class="modal-note" id="reqNote">
+      Send a request to Aisha for this item. You can discuss payment and campus pickup through chat.
+    </p>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" data-close-req>Cancel</button>
+      <button class="btn btn-primary" id="reqConfirm">Send Request</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* =========================================================
+     DEMO DATA
+     ---------------------------------------------------------
+     This is the only place that holds conversation state.
+     Shape mirrors what a real API would return, so the render
+     functions below won't change when a backend is added:
+
+       GET  /api/conversations            -> conversations[]
+       GET  /api/conversations/:id        -> one conversation
+       POST /api/conversations/:id/messages
+       POST /api/products/:id/request
+
+     ===== INTEGRATION POINT =====
+     Replace this array with a fetch on load, then call
+     renderConversationList() / openConversation(id).
+     ========================================================= */
+  var CURRENT_USER_ID = 'u_me';
+
+  function minsAgo(m){ return new Date(Date.now() - m * 60000).toISOString(); }
+
+  var conversations = [
+    {
+      id: 'c_1001',
+      buyerId: CURRENT_USER_ID,
+      sellerId: 'u_aisha',
+      participant: {
+        id: 'u_aisha', name: 'Aisha Sharma', initials: 'AS',
+        meta: 'Student · Main Campus', presence: 'Active recently'
+      },
+      product: {
+        id: 'p_denim_jacket', title: 'Vintage Denim Jacket', condition: 'Like New',
+        price: '₹850', location: 'Main Campus', icon: 'icon-clothes',
+        status: 'available', url: 'product-details.html?item=vintage-denim-jacket'
+      },
+      unread: 1,
+      messages: [
+        { id:'m1', from:'u_aisha',        text:'Hi! Is the denim jacket still available?',                       at: minsAgo(52) },
+        { id:'m2', from:CURRENT_USER_ID,  text:"Hey! Yes, it is. It's still available.",                         at: minsAgo(48) },
+        { id:'m3', from:'u_aisha',        text:'Great! Is the price negotiable?',                                at: minsAgo(40) },
+        { id:'m4', from:CURRENT_USER_ID,  text:"I can do ₹800 if you're okay with picking it up tomorrow.",      at: minsAgo(34) },
+        { id:'m5', from:'u_aisha',        text:'That works for me!',                                             at: minsAgo(9)  },
+        { id:'m6', from:CURRENT_USER_ID,  text:'Perfect. We can meet near the main library around 2 PM.',        at: minsAgo(5)  },
+        { id:'m7', from:'u_aisha',        text:'See you then. Thank you!',                                       at: minsAgo(2)  }
+      ]
+    },
+    {
+      id: 'c_1002',
+      buyerId: 'u_rahul',
+      sellerId: CURRENT_USER_ID,
+      participant: {
+        id: 'u_rahul', name: 'Rahul Mehta', initials: 'RM',
+        meta: 'Student · Main Campus', presence: 'Active 1 hr ago'
+      },
+      product: {
+        id: 'p_calculator', title: 'Scientific Calculator', condition: 'Like New',
+        price: '₹550', location: 'Main Campus', icon: 'icon-calculator',
+        status: 'requested', url: 'product-details.html?item=scientific-calculator'
+      },
+      unread: 2,
+      messages: [
+        { id:'m1', from:'u_rahul',       text:'Hi, I need this for my exam next week. Is it working fine?', at: minsAgo(38) },
+        { id:'m2', from:CURRENT_USER_ID, text:'Yes, works perfectly. Barely used it last semester.',        at: minsAgo(30) },
+        { id:'m3', from:'system',        text:'Rahul requested this item.',                                 at: minsAgo(22) },
+        { id:'m4', from:'u_rahul',       text:'Can we meet near the library?',                              at: minsAgo(15) },
+        { id:'m5', from:'u_rahul',       text:'I am free after 4 PM on most days.',                         at: minsAgo(14) }
+      ]
+    },
+    {
+      id: 'c_1003',
+      buyerId: 'u_neha',
+      sellerId: CURRENT_USER_ID,
+      participant: {
+        id: 'u_neha', name: 'Neha Patil', initials: 'NP',
+        meta: 'Student · South Wing', presence: 'Active today'
+      },
+      product: {
+        id: 'p_backpack', title: 'Canvas Backpack', condition: 'Like New',
+        price: '₹780', location: 'Main Campus', icon: 'icon-backpack',
+        status: 'reserved', url: 'product-details.html?item=canvas-backpack'
+      },
+      unread: 0,
+      messages: [
+        { id:'m1', from:'u_neha',        text:'Hello! Is the backpack big enough for a laptop?', at: minsAgo(140) },
+        { id:'m2', from:CURRENT_USER_ID, text:'Yes, a 15-inch laptop fits comfortably.',         at: minsAgo(132) },
+        { id:'m3', from:'u_neha',        text:'Would you take ₹700 for it?',                     at: minsAgo(64)  },
+        { id:'m4', from:CURRENT_USER_ID, text:"Let's settle at ₹740 and I'll hold it for you.",  at: minsAgo(60)  },
+        { id:'m5', from:'system',        text:'You reserved this item for Neha.',                at: minsAgo(58)  }
+      ]
+    },
+    {
+      id: 'c_1004',
+      buyerId: CURRENT_USER_ID,
+      sellerId: 'u_karan',
+      participant: {
+        id: 'u_karan', name: 'Karan Iyer', initials: 'KI',
+        meta: 'Student · North Hostel', presence: 'Active 2 days ago'
+      },
+      product: {
+        id: 'p_alchemist', title: 'The Alchemist — Paperback', condition: 'Like New',
+        price: '₹250', location: 'North Hostel', icon: 'icon-books',
+        status: 'completed', url: 'product-details.html?item=the-alchemist-paperback'
+      },
+      unread: 0,
+      messages: [
+        { id:'m1', from:CURRENT_USER_ID, text:'Hi! Is the book still there?',                 at: minsAgo(3100) },
+        { id:'m2', from:'u_karan',       text:'Yes! I can bring it to the canteen tomorrow.', at: minsAgo(3050) },
+        { id:'m3', from:CURRENT_USER_ID, text:'That works. See you at 1 PM.',                 at: minsAgo(3020) },
+        { id:'m4', from:'system',        text:'Exchange completed.',                          at: minsAgo(2900) }
+      ]
+    }
+  ];
+
+  var STATUS_LABEL = {
+    available:'Available', requested:'Requested',
+    reserved:'Reserved',   completed:'Completed'
+  };
+
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+  var $ = function(id){ return document.getElementById(id); };
+
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+
+  function relTime(iso){
+    var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+    if(diff < 1)    return 'just now';
+    if(diff < 60)   return diff + ' min ago';
+    var h = Math.floor(diff / 60);
+    if(h < 24)      return h + (h === 1 ? ' hr ago' : ' hrs ago');
+    var d = Math.floor(h / 24);
+    if(d === 1)     return 'yesterday';
+    if(d < 7)       return d + ' days ago';
+    return new Date(iso).toLocaleDateString(undefined, { day:'numeric', month:'short' });
+  }
+
+  function clockTime(iso){
+    return new Date(iso).toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' });
+  }
+
+  function dayLabel(iso){
+    var d = new Date(iso), now = new Date();
+    var startOf = function(x){ return new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime(); };
+    var days = Math.round((startOf(now) - startOf(d)) / 86400000);
+    if(days === 0) return 'Today';
+    if(days === 1) return 'Yesterday';
+    return d.toLocaleDateString(undefined, { day:'numeric', month:'long' });
+  }
+
+  function iconSvg(id, cls){
+    return '<svg class="' + (cls || 'icon') + '"><use href="#' + id + '" xlink:href="#' + id + '"></use></svg>';
+  }
+
+  function toast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = iconSvg('icon-check') + '<span></span>';
+    t.querySelector('span').textContent = msg;
+    $('toast-container').appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 320);
+    }, 2400);
+  }
+
+  function lastMessage(conv){
+    return conv.messages.length ? conv.messages[conv.messages.length - 1] : null;
+  }
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+  var activeId = conversations.length ? conversations[0].id : null;
+  var searchTerm = '';
+
+  function getConv(id){
+    for(var i = 0; i < conversations.length; i++){
+      if(conversations[i].id === id) return conversations[i];
+    }
+    return null;
+  }
+
+  function matchesSearch(conv, term){
+    if(!term) return true;
+    term = term.toLowerCase();
+    if(conv.participant.name.toLowerCase().indexOf(term) > -1) return true;
+    if(conv.product.title.toLowerCase().indexOf(term) > -1)    return true;
+    for(var i = 0; i < conv.messages.length; i++){
+      if(conv.messages[i].text.toLowerCase().indexOf(term) > -1) return true;
+    }
+    return false;
+  }
+
+  /* =========================================================
+     RENDER — conversation list
+     ========================================================= */
+  function renderConversationList(){
+    var list = $('convList');
+    var visible = conversations.filter(function(c){ return matchesSearch(c, searchTerm); });
+
+    list.innerHTML = visible.map(function(c){
+      var last = lastMessage(c);
+      var preview = last ? (last.from === CURRENT_USER_ID ? 'You: ' + last.text : last.text) : 'No messages yet';
+      return '' +
+        '<button class="conv-item' + (c.id === activeId ? ' active' : '') + (c.unread ? ' unread' : '') + '"' +
+                ' data-id="' + c.id + '" role="tab" aria-selected="' + (c.id === activeId) + '">' +
+          '<span class="avatar">' + esc(c.participant.initials) + '</span>' +
+          '<span class="conv-body">' +
+            '<span class="conv-row">' +
+              '<span class="conv-name">' + esc(c.participant.name) + '</span>' +
+              '<span class="conv-time">' + (last ? relTime(last.at) : '') + '</span>' +
+            '</span>' +
+            '<span class="conv-preview">' + esc(preview) + '</span>' +
+            '<span class="conv-product">' + iconSvg('icon-box') + '<span>' + esc(c.product.title) + '</span></span>' +
+          '</span>' +
+          (c.unread ? '<span class="unread-pill">' + c.unread + '</span>' : '') +
+        '</button>';
+    }).join('');
+
+    $('listEmpty').classList.toggle('show', visible.length === 0 && conversations.length > 0);
+
+    Array.prototype.forEach.call(list.querySelectorAll('.conv-item'), function(el){
+      el.addEventListener('click', function(){ openConversation(el.dataset.id); });
+    });
+
+    updateNavUnread();
+  }
+
+  function updateNavUnread(){
+    var total = conversations.reduce(function(sum, c){ return sum + (c.unread || 0); }, 0);
+    var dot = $('navUnread');
+    if(!dot) return;
+    dot.textContent = total;
+    dot.style.display = total ? 'flex' : 'none';
+  }
+
+  /* =========================================================
+     RENDER — active chat
+     ========================================================= */
+  function renderChatHeader(conv){
+    $('chatAvatar').textContent = conv.participant.initials;
+    $('chatName').textContent   = conv.participant.name;
+    $('chatMeta').textContent   = conv.participant.meta;
+    $('chatStatus').textContent = conv.participant.presence;
+  }
+
+  function renderProductContext(conv){
+    var p = conv.product;
+    $('pcThumb').innerHTML = iconSvg(p.icon);
+    $('pcTitle').textContent = p.title;
+    $('pcMeta').textContent  = p.condition + ' · ' + p.location;
+    $('pcPrice').textContent = p.price;
+    $('pcView').setAttribute('href', p.url);
+
+    var el = $('pcStatus');
+    el.className = 'status-line st-' + p.status;
+    el.innerHTML = (p.status === 'completed' ? iconSvg('icon-check') : '<span class="sdot"></span>') +
+                   '<span class="stext">' + STATUS_LABEL[p.status] + '</span>';
+
+    /* You can only request an item that is still available,
+       and never your own listing. */
+    var isMyListing = conv.sellerId === CURRENT_USER_ID;
+    var btn = $('requestBtn');
+    btn.style.display = (p.status === 'available' && !isMyListing) ? '' : 'none';
+  }
+
+  function renderMessages(conv){
+    var thread = $('msgThread');
+    var html = '';
+    var lastDay = '';
+    var i = 0;
+
+    while(i < conv.messages.length){
+      var m = conv.messages[i];
+
+      var thisDay = dayLabel(m.at);
+      if(thisDay !== lastDay){
+        html += '<div class="day-sep"><span>' + esc(thisDay) + '</span></div>';
+        lastDay = thisDay;
+      }
+
+      if(m.from === 'system'){
+        html += '<div class="sys-msg"><span>' + esc(m.text) + '</span></div>';
+        i++;
+        continue;
+      }
+
+      /* Group consecutive messages from the same sender */
+      var mine = m.from === CURRENT_USER_ID;
+      var group = [];
+      while(i < conv.messages.length &&
+            conv.messages[i].from === m.from &&
+            dayLabel(conv.messages[i].at) === thisDay){
+        group.push(conv.messages[i]);
+        i++;
+      }
+
+      html += '<div class="msg-group ' + (mine ? 'mine' : 'theirs') + '">' +
+                '<span class="g-avatar">' + esc(conv.participant.initials) + '</span>' +
+                '<div class="bubbles">' +
+                  group.map(function(g){
+                    return '<div class="bubble">' + esc(g.text) + '</div>';
+                  }).join('') +
+                  '<span class="msg-time">' + clockTime(group[group.length - 1].at) + '</span>' +
+                '</div>' +
+              '</div>';
+    }
+
+    thread.innerHTML = html;
+  }
+
+  function scrollToLatest(smooth){
+    var box = $('chatScroll');
+    box.scrollTo({ top: box.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+  }
+
+  function openConversation(id){
+    var conv = getConv(id);
+    if(!conv) return;
+
+    activeId = id;
+
+    /* Opening a conversation marks it read.
+       ===== INTEGRATION POINT: PATCH /api/conversations/:id { read:true } ===== */
+    conv.unread = 0;
+
+    renderConversationList();
+    renderChatHeader(conv);
+    renderProductContext(conv);
+    renderMessages(conv);
+    closeMenu();
+
+    /* Mobile: slide from the list to the chat */
+    $('chatShell').classList.add('show-chat');
+    scrollToLatest(false);
+  }
+
+  /* =========================================================
+     SENDING MESSAGES
+     ========================================================= */
+  function sendMessage(text){
+    text = text.replace(/\s+$/, '');
+    if(!text) return;
+
+    var conv = getConv(activeId);
+    if(!conv) return;
+
+    var msg = {
+      id: 'm_' + Date.now(),
+      from: CURRENT_USER_ID,
+      text: text,
+      at: new Date().toISOString()
+    };
+
+    /* ===== INTEGRATION POINT =====
+       POST /api/conversations/:id/messages  { text }
+       On success, reconcile the optimistic message with the
+       server copy (real id, server timestamp). */
+    conv.messages.push(msg);
+
+    renderMessages(conv);
+    renderConversationList();
+    scrollToLatest(true);
+  }
+
+  var input = $('msgInput');
+
+  function autoGrow(){
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  }
+
+  function submitFromInput(){
+    sendMessage(input.value);
+    input.value = '';
+    autoGrow();
+    input.focus();
+  }
+
+  $('sendBtn').addEventListener('click', submitFromInput);
+  input.addEventListener('input', autoGrow);
+  input.addEventListener('keydown', function(e){
+    /* Enter sends, Shift+Enter makes a new line */
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      submitFromInput();
+    }
+  });
+
+  /* Quick message suggestions drop text into the composer */
+  Array.prototype.forEach.call(document.querySelectorAll('#quickRow .quick-chip'), function(chip){
+    chip.addEventListener('click', function(){
+      input.value = chip.textContent.trim();
+      autoGrow();
+      input.focus();
+    });
+  });
+
+  /* =========================================================
+     EMOJI + ATTACH
+     ========================================================= */
+  var EMOJI = ['🙂','👍','🙏','😀','😅','🎉','✅','❤️','👋','📚','🎒','💡','📍','⏰','💬','✨'];
+  var emojiPop = $('emojiPop');
+  emojiPop.innerHTML = EMOJI.map(function(e){
+    return '<button type="button" aria-label="Insert ' + e + '">' + e + '</button>';
+  }).join('');
+
+  function closeEmoji(){
+    emojiPop.classList.remove('open');
+    $('emojiBtn').setAttribute('aria-expanded','false');
+  }
+
+  $('emojiBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    var open = emojiPop.classList.toggle('open');
+    $('emojiBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  emojiPop.addEventListener('click', function(e){
+    var b = e.target.closest('button');
+    if(!b) return;
+    input.value += b.textContent;
+    autoGrow();
+    closeEmoji();
+    input.focus();
+  });
+
+  $('attachBtn').addEventListener('click', function(){
+    /* ===== INTEGRATION POINT: open a file picker and upload ===== */
+    toast('Photo attachments are coming soon');
+  });
+
+  /* =========================================================
+     CHAT OPTIONS MENU
+     ========================================================= */
+  var chatMenu = $('chatMenu');
+
+  function closeMenu(){
+    chatMenu.classList.remove('open');
+    $('dotsBtn').setAttribute('aria-expanded','false');
+  }
+
+  $('dotsBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    var open = chatMenu.classList.toggle('open');
+    $('dotsBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  chatMenu.addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-menu]');
+    if(!btn) return;
+    var conv = getConv(activeId);
+    var who = conv ? conv.participant.name : 'this user';
+    var action = btn.dataset.menu;
+
+    /* ===== INTEGRATION POINT: POST the moderation action ===== */
+    if(action === 'mute')   toast('Conversation muted');
+    if(action === 'report') toast('Report sent to the Campus Thrift team');
+    if(action === 'block')  toast(who + ' has been blocked');
+    closeMenu();
+  });
+
+  document.addEventListener('click', function(){ closeMenu(); closeEmoji(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){ closeMenu(); closeEmoji(); }
+  });
+
+  /* =========================================================
+     REQUEST ITEM
+     ========================================================= */
+  var reqModal = $('reqModal');
+
+  function openReq(){
+    var conv = getConv(activeId);
+    if(!conv) return;
+    var p = conv.product;
+
+    $('reqThumb').innerHTML  = iconSvg(p.icon);
+    $('reqName').textContent  = p.title;
+    $('reqPrice').textContent = p.price;
+    $('reqNote').textContent  =
+      'Send a request to ' + conv.participant.name.split(' ')[0] +
+      ' for this item. You can discuss payment and campus pickup through chat.';
+
+    reqModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeReq(){
+    reqModal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  $('requestBtn').addEventListener('click', openReq);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-close-req]'), function(el){
+    el.addEventListener('click', closeReq);
+  });
+  reqModal.addEventListener('click', function(e){ if(e.target === reqModal) closeReq(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && reqModal.classList.contains('open')) closeReq();
+  });
+
+  $('reqConfirm').addEventListener('click', function(){
+    var conv = getConv(activeId);
+    if(!conv) return;
+
+    /* ===== INTEGRATION POINT =====
+       POST /api/products/:id/request  { conversationId }
+       The server owns the real status transition. */
+    conv.product.status = 'requested';
+    conv.messages.push({
+      id: 'm_' + Date.now(),
+      from: 'system',
+      text: 'You requested this item.',
+      at: new Date().toISOString()
+    });
+
+    renderProductContext(conv);
+    renderMessages(conv);
+    renderConversationList();
+    closeReq();
+    scrollToLatest(true);
+    toast('Request sent to ' + conv.participant.name.split(' ')[0]);
+  });
+
+  /* =========================================================
+     SEARCH
+     ========================================================= */
+  $('convSearch').addEventListener('input', function(e){
+    searchTerm = e.target.value.trim();
+    renderConversationList();
+  });
+
+  /* =========================================================
+     SAFETY TIPS TOGGLE
+     ========================================================= */
+  $('snMore').addEventListener('click', function(){
+    var open = $('snList').classList.toggle('show');
+    $('snMore').setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  /* =========================================================
+     MOBILE NAV + PANEL SWITCHING
+     ========================================================= */
+  var panel = $('mobilePanel');
+  function closePanel(){ panel.classList.remove('open'); document.body.style.overflow = ''; }
+  $('hamburgerBtn').addEventListener('click', function(){
+    panel.classList.add('open'); document.body.style.overflow = 'hidden';
+  });
+  $('mobileClose').addEventListener('click', closePanel);
+  Array.prototype.forEach.call(panel.querySelectorAll('a'), function(a){
+    a.addEventListener('click', closePanel);
+  });
+
+  $('backBtn').addEventListener('click', function(){
+    $('chatShell').classList.remove('show-chat');
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-soon]'), function(el){
+    el.addEventListener('click', function(){ toast(el.getAttribute('data-soon') + ' is coming soon'); });
+  });
+
+  /* =========================================================
+     BOOT
+     ========================================================= */
+  function boot(){
+    if(!conversations.length){
+      $('chatShell').style.display = 'none';
+      $('pageEmpty').classList.add('show');
+      updateNavUnread();
+      return;
+    }
+
+    renderConversationList();
+
+    var first = getConv(activeId);
+    renderChatHeader(first);
+    renderProductContext(first);
+    renderMessages(first);
+    scrollToLatest(false);
+
+    /* On desktop both panels show at once; on mobile the list
+       comes first until a conversation is tapped. */
+    if(window.matchMedia('(min-width: 861px)').matches){
+      $('chatShell').classList.add('show-chat');
+    }
+  }
+
+  boot();
+
+})();
+</script>
+
+</body>
+</html>
